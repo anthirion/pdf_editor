@@ -1,15 +1,14 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QGridLayout, QSpacerItem, QSizePolicy,
+    QLabel, QGridLayout, QSpacerItem, QSizePolicy,
 )
-from PySide6.QtGui import QPixmap, QAction, QPalette, QColor
+from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
 from GUI.resources import (
     fusion_pdf_icon,
 )
-from GUI.menubar import MenuBar
 from global_variables import default_spacing
 
 
@@ -22,35 +21,10 @@ class HomePage(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        # Barre de menu
-        self.menubar = MenuBar(parent=self)
-        self.setMenuBar(self.menubar)
-
         # Widget central
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
-
-        # Définir la couleur de fond en blanc
-        # palette = central_widget.palette()
-        # palette.setColor(QPalette.window(), QColor("white"))
-        # central_widget.setPalette(palette)
-
-        # Barre latérale
-        # sidebar = QWidget()
-        # sidebar_layout = QVBoxLayout(sidebar)
-        # sidebar_layout.addWidget(QPushButton("Accueil"))
-        # # ajouter de la marge entre chaque bouton
-        # sidebar_layout.addSpacing(default_spacing // 2)
-        # sidebar_layout.addWidget(QPushButton("Ouvrir"))
-        # # ajouter de la marge entre chaque bouton
-        # sidebar_layout.addSpacing(default_spacing // 2)
-        # sidebar_layout.addWidget(QPushButton("Nouveau"))
-        # # ajouter de la marge entre chaque bouton
-        # sidebar_layout.addSpacing(default_spacing // 2)
-        # sidebar_layout.addStretch()
-        # sidebar.setFixedWidth(150)
-        # main_layout.addWidget(sidebar)
 
         # Contenu principal
         content = QWidget()
@@ -125,10 +99,3 @@ class HomePage(QMainWindow):
                                      )
 
         main_layout.addWidget(content)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = HomePage()
-    window.show()
-    sys.exit(app.exec())

@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QApplication
-from GUI.homepage import HomePage
+from GUI.main_view import PDFEditorMainWindow
 
-app = QApplication([])
-window = HomePage()
-window.show()
-app.exec()
+if __name__ == "__main__":
+    app = QApplication([])
+    window = PDFEditorMainWindow()
+    window.show()
+    app.exec()
