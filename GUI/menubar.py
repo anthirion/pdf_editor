@@ -1,14 +1,18 @@
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenuBar, QFileDialog, QMessageBox
 from PySide6.QtCore import Signal, Slot
-from enum import Enum
+from enum import IntEnum
+
+from Backend.display_pdf import extract_text_from_pdf
 
 
-class ViewConstants(Enum):
+class ViewConstants(IntEnum):
+    # ATTENTION: utiliser un IntEnum plutôt qu'un enum
     MergerView = 1
     SplitterView = 2
     PDFtoPNGView = 3
     PNGtoPDFView = 4
+    ReaderView = 5
 
 
 class MenuBar(QMenuBar):
@@ -17,6 +21,7 @@ class MenuBar(QMenuBar):
     # 2 si vue de division des pdf (pdf_splitter_view), etc
     # pour plus de simplicité, les constantes sont définies dans l'enum ViewConstants
     change_view_signal = Signal(int)
+    display_pdf_signal = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -60,32 +65,24 @@ class MenuBar(QMenuBar):
         file_name, _ = QFileDialog.getOpenFileName(
             self, "Ouvrir un fichier", "", "PDF Files (*.pdf);;All Files (*)")
 
-        if file_name:  # Si un fichier est sélectionné
-            QMessageBox.information(self,
-                                    "Fichier Sélectionné",
-                                    f"Vous avez sélectionné : {file_name}")
+        if file_name:
+            self.display_pdf_signal.emit(file_name)
         else:
             QMessageBox.warning(self, "Aucun Fichier",
                                 "Aucun fichier n'a été sélectionné.")
 
     @Slot()
     def merge_pdf_selected(self):
-        # la méthode emit ne fonctionne pas avec un enum
-        # on est donc obligé de déclarer une variable view_index intermédiaire
-        view_index = ViewConstants.MergerView
-        self.change_view_signal.emit(view_index)
+        self.change_view_signal.emit(ViewConstants.MergerView)
 
     @Slot()
     def split_pdf_selected(self):
-        view_index = ViewConstants.SplitterView
-        self.change_view_signal.emit(view_index)
+        self.change_view_signal.emit(ViewConstants.SplitterView)
 
     @Slot()
     def convert_pdf_to_png_selected(self):
-        view_index = ViewConstants.PDFtoPNGView
-        self.change_view_signal.emit(view_index)
+        self.change_view_signal.emit(ViewConstants.PDFtoPNGView)
 
     @Slot()
     def convert_png_to_pdf_selected(self):
-        view_index = ViewConstants.PNGtoPDFView
-        self.change_view_signal.emit(view_index)
+        self.change_view_signal.emit(ViewConstants.PNGtoPDFView)

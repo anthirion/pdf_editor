@@ -17,3 +17,9 @@ Cette application a été créée par Antoine Thirion. Si d'autres projets simil
 Cette application est codée entièrement en python. Elle utilise la librairie <a href="https://pypdf.readthedocs.io/en/stable/index.html">pypdf</a> pour effectuer les différentes opérations sur les fichiers PDF et librairie graphique PySide6 pour l'interface graphique.
 
 # Installation
+
+# Points à retenir
+<ul>
+<li>Utiliser un IntEnum plutôt qu'un Enum lorsqu'on manipule des entiers</li>
+<li>Un signal doit être attaché à une instance de classe et pas à une classe</li>
+</ul>
