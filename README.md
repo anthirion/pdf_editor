@@ -22,4 +22,5 @@ Cette application est codée entièrement en python. Elle utilise la librairie <
 <ul>
 <li>Utiliser un IntEnum plutôt qu'un Enum lorsqu'on manipule des entiers</li>
 <li>Un signal doit être attaché à une instance de classe et pas à une classe</li>
+<li>Un signal doit être connecté dans la classe qui le définit (dans le constructeur par exemple). Le slot associé doit donc utilisé la classe parent.</li>
 </ul>

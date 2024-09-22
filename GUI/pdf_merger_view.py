@@ -1,10 +1,19 @@
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
+from PySide6.QtWidgets import (QMessageBox, QMainWindow, QWidget, QVBoxLayout,
                                QPushButton, QFileDialog, QListWidget)
+from PySide6.QtCore import Signal
+
+from Backend.pdf_operations import (
+    merge_pdf
+)
+import global_variables as GV
 
 
 class PDFMergerView(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    display_pdf_signal = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.display_pdf_signal.connect(parent.display_pdf)
         self.setWindowTitle("PDF Editor - Fusion de PDF")
         self.setGeometry(100, 100, 600, 400)
         self.init_ui()
@@ -61,7 +70,16 @@ class PDFMergerView(QMainWindow):
             self.file_list.addItems(files)
 
     def merge_pdfs(self):
-        # Ici, vous implémenterez la logique de fusion des PDF
-        # Pour l'instant, nous allons juste afficher un message
-        print("Fusion des PDF sélectionnés")
-        # Vous pouvez utiliser une bibliothèque comme PyPDF2 pour la fusion réelle
+        # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
+        pdf_files = [self.file_list.item(i).text()
+                     for i in range(self.file_list.count())]
+
+        if pdf_files:
+            merge_pdf(GV.output_file, *pdf_files)
+            QMessageBox.information(self, "Succès de la fusion de PDF",
+                                    f"Le PDF fusionné a été enregistré dans le dossier {GV.output_file}")
+            # Ouvrir le fichier fusionné
+            self.display_pdf_signal.emit(GV.output_file)
+        else:
+            QMessageBox.warning(self, "Echec de la fusion de PDF",
+                                "Aucun fichier PDF à fusionner.")

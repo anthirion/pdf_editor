@@ -1,18 +1,8 @@
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenuBar, QFileDialog, QMessageBox
 from PySide6.QtCore import Signal, Slot
-from enum import IntEnum
 
-from Backend.display_pdf import extract_text_from_pdf
-
-
-class ViewConstants(IntEnum):
-    # ATTENTION: utiliser un IntEnum plutôt qu'un enum
-    MergerView = 1
-    SplitterView = 2
-    PDFtoPNGView = 3
-    PNGtoPDFView = 4
-    ReaderView = 5
+import global_variables as GV
 
 
 class MenuBar(QMenuBar):
@@ -25,6 +15,8 @@ class MenuBar(QMenuBar):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.change_view_signal.connect(parent.change_view)
+        self.display_pdf_signal.connect(parent.display_pdf)
 
         # Menu Fichier
         self.file_menu = self.addMenu("Fichier")
@@ -58,7 +50,6 @@ class MenuBar(QMenuBar):
 
 ################################# Slots #################################
 
-
     @Slot()
     def open_file_dialog(self):
         # Ouvre une boîte de dialogue pour sélectionner un fichier PDF
@@ -73,16 +64,16 @@ class MenuBar(QMenuBar):
 
     @Slot()
     def merge_pdf_selected(self):
-        self.change_view_signal.emit(ViewConstants.MergerView)
+        self.change_view_signal.emit(GV.ViewConstants.MergerView)
 
     @Slot()
     def split_pdf_selected(self):
-        self.change_view_signal.emit(ViewConstants.SplitterView)
+        self.change_view_signal.emit(GV.ViewConstants.SplitterView)
 
     @Slot()
     def convert_pdf_to_png_selected(self):
-        self.change_view_signal.emit(ViewConstants.PDFtoPNGView)
+        self.change_view_signal.emit(GV.ViewConstants.PDFtoPNGView)
 
     @Slot()
     def convert_png_to_pdf_selected(self):
-        self.change_view_signal.emit(ViewConstants.PNGtoPDFView)
+        self.change_view_signal.emit(GV.ViewConstants.PNGtoPDFView)

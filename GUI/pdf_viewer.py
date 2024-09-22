@@ -3,12 +3,14 @@ from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtPdf import QPdfDocument
 
 
-class PDFReaderView(QMainWindow):
-    def __init__(self, pdf_file_path: str = "/home/thiran/projets_persos/pdf_editor/pdf_examples/attestation_suivi_cours_python.pdf"):
-        super().__init__()
+class PDFViewer(QMainWindow):
+    def __init__(self, parent=None, pdf_file_path: str = ""):
+        super().__init__(parent)
         self.setWindowTitle("PDF Editor - Lecture")
         self._pdf_file_path = pdf_file_path
         self.pdf_view = QPdfView()
+        # Permet l'affichage de toutes les pages du fichier pdf
+        self.pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
         self.pdf_doc = QPdfDocument()
         self.setCentralWidget(self.pdf_view)
 

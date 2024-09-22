@@ -13,11 +13,10 @@ from global_variables import default_spacing
 
 
 class HomePage(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
-
         self.init_ui()
 
     def init_ui(self):

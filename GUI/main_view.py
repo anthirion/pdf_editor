@@ -1,16 +1,17 @@
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget,
+    QMainWindow, QWidget,
     QStackedWidget, QHBoxLayout,
 )
 from PySide6.QtCore import Slot
 
-from GUI.menubar import MenuBar, ViewConstants
+from GUI.menubar import MenuBar
 from GUI.homepage import HomePage
 from GUI.pdf_merger_view import PDFMergerView
 from GUI.pdf_splitter_view import PDFSplitterView
 from GUI.pdf_to_jpg_view import PDFToJPGView
 from GUI.jpg_to_pdf_view import JPGToPDFView
-from GUI.pdf_reader_view import PDFReaderView
+from GUI.pdf_viewer import PDFViewer
+import global_variables as GV
 
 
 class PDFEditorMainWindow(QMainWindow):
@@ -25,8 +26,6 @@ class PDFEditorMainWindow(QMainWindow):
         # Barre de menu
         menubar = MenuBar(self)
         self.setMenuBar(menubar)
-        menubar.change_view_signal.connect(self.change_view)
-        menubar.display_pdf_signal.connect(self.display_pdf)
 
         # Widget central
         central_widget = QWidget()
@@ -38,13 +37,13 @@ class PDFEditorMainWindow(QMainWindow):
         main_layout.addWidget(self.content_area)
 
         # Ajout des différentes vues
-        self.content_area.addWidget(HomePage())
-        self.content_area.addWidget(PDFMergerView())
-        self.content_area.addWidget(PDFSplitterView())
-        self.content_area.addWidget(PDFToJPGView())
-        self.content_area.addWidget(JPGToPDFView())
-        self._pdf_reader_view = PDFReaderView()
-        self.content_area.addWidget(self._pdf_reader_view)
+        self.content_area.addWidget(HomePage(self))
+        self.content_area.addWidget(PDFMergerView(self))
+        self.content_area.addWidget(PDFSplitterView(self))
+        self.content_area.addWidget(PDFToJPGView(self))
+        self.content_area.addWidget(JPGToPDFView(self))
+        self._pdf_viewer = PDFViewer(self)
+        self.content_area.addWidget(self._pdf_viewer)
 
 ################################# Slots #################################
 
@@ -54,5 +53,5 @@ class PDFEditorMainWindow(QMainWindow):
 
     @Slot(str)
     def display_pdf(self, pdf_file_path: str):
-        self._pdf_reader_view.display_pdf(pdf_file_path)
-        self.content_area.setCurrentIndex(ViewConstants.ReaderView)
+        self._pdf_viewer.display_pdf(pdf_file_path)
+        self.content_area.setCurrentIndex(GV.ViewConstants.ReaderView)
