@@ -1,10 +1,15 @@
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox
 from PySide6.QtCore import Signal, Slot
 
 from pathlib import Path
 
 import global_variables as GV
+# importation des icones
+from GUI.resources import (
+    add_icon, open_icon, quit_icon, rename_icon,
+    search_icon, merge_icon, help_icon
+)
 
 
 class TopBar(QMenuBar, QToolBar):
@@ -35,26 +40,37 @@ class TopBar(QMenuBar, QToolBar):
         # Menu Fichier
         self.file_menu = menu.addMenu("Fichier")
         # Sous-menu "Nouveau"
-        self.new_action = QAction("Nouveau", self)
+        self.new_action = QAction(QIcon(add_icon), "Nouveau", self)
         # Sous-menu "Ouvrir"
-        self.open_action = QAction("Ouvrir", self)
+        self.open_action = QAction(QIcon(open_icon), "Ouvrir", self)
         self.open_action.setShortcut("Ctrl+O")
         self.open_action.triggered.connect(self.open_file_dialog)
+        # Sous-menu "Quitter"
+        self.quit_action = QAction(QIcon(quit_icon), "Quitter", self)
+        self.quit_action.setShortcut("Ctrl+Q")
+        self.quit_action.triggered.connect(self.quit_application)
+
         self.file_menu.addAction(self.new_action)
         self.file_menu.addAction(self.open_action)
+        self.file_menu.addAction(self.quit_action)
 
         # Menu Edition
         edition_menu = menu.addMenu("Edition")
         # Sous-menu "Rechercher"
-        self.search_action = QAction("Rechercher", self)
+        self.search_action = QAction(QIcon(search_icon), "Rechercher", self)
         self.search_action.setShortcut("Ctrl+F")
         self.search_action.triggered.connect(self.search_action_selected)
         edition_menu.addAction(self.search_action)
+        # Sous-menu "Renommer"
+        self.rename_action = QAction(QIcon(rename_icon), "Renommer", self)
+        self.rename_action.setShortcut("Ctrl+F")
+        self.rename_action.triggered.connect(self.rename)
+        edition_menu.addAction(self.rename_action)
 
         # Menu Outils
         tools_menu = menu.addMenu("Outils")
         # Sous-menu "Fusionner PDF"
-        merge_pdf_action = QAction("Fusionner PDF", self)
+        merge_pdf_action = QAction(QIcon(merge_icon), "Fusionner PDF", self)
         merge_pdf_action.triggered.connect(self.merge_pdf_selected)
         # Sous-menu "Diviser PDF"
         split_pdf_action = QAction("Diviser PDF", self)
@@ -76,7 +92,7 @@ class TopBar(QMenuBar, QToolBar):
         # Menu Aide
         help_menu = menu.addMenu("Aide")
         # Sous-menu "Obtenir de l'aide"
-        get_online_help = QAction("Obtenir de l'aide", self)
+        get_online_help = QAction(QIcon(help_icon), "Obtenir de l'aide", self)
         help_menu.addAction(get_online_help)
 
         """
@@ -86,6 +102,7 @@ class TopBar(QMenuBar, QToolBar):
         toolbar.addAction(self.new_action)
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.search_action)
+        toolbar.addAction(self.rename_action)
 
         parent.addToolBar(toolbar)
 
@@ -104,6 +121,14 @@ class TopBar(QMenuBar, QToolBar):
             last_path_component = Path(file_path).name
             self._parent_window.setWindowTitle(
                 "PDF Editor - " + last_path_component)
+
+    @Slot()
+    def rename(self):
+        pass
+
+    @Slot()
+    def quit_application(self):
+        self._parent_window._app.instance().quit()
 
     @Slot()
     def search_action_selected(self):

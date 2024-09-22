@@ -15,10 +15,11 @@ import global_variables as GV
 
 
 class PDFEditorMainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
+        self._app = app
         self._pdf_viewer = PDFViewer(self)
         # Barre de menu et d'outils
         self._topbar = TopBar(self)

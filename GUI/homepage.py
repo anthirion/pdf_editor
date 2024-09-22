@@ -1,4 +1,3 @@
-import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QGridLayout, QSpacerItem, QSizePolicy,
@@ -6,9 +5,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
-from GUI.resources import (
-    fusion_pdf_icon,
-)
+from GUI.resources import merge_icon
 from global_variables import default_spacing
 
 
@@ -61,10 +58,10 @@ class HomePage(QMainWindow):
         ]
 
         icons = [
-            fusion_pdf_icon,
-            fusion_pdf_icon,
-            fusion_pdf_icon,
-            fusion_pdf_icon,
+            merge_icon,
+            merge_icon,
+            merge_icon,
+            merge_icon,
         ]
 
         for i, tool in enumerate(zip(tools_name, tools_desc, icons)):
