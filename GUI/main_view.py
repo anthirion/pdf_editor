@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Slot
 
-from GUI.menubar import MenuBar
+from GUI.topbar import TopBar
 from GUI.homepage import HomePage
 from GUI.pdf_merger_view import PDFMergerView
 from GUI.pdf_splitter_view import PDFSplitterView
@@ -19,13 +19,12 @@ class PDFEditorMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
+        self._pdf_viewer = PDFViewer(self)
+        # Barre de menu et d'outils
+        self._topbar = TopBar(self)
         self.init_ui()
 
     def init_ui(self):
-
-        # Barre de menu
-        menubar = MenuBar(self)
-        self.setMenuBar(menubar)
 
         # Widget central
         central_widget = QWidget()
@@ -42,7 +41,6 @@ class PDFEditorMainWindow(QMainWindow):
         self.content_area.addWidget(PDFSplitterView(self))
         self.content_area.addWidget(PDFToJPGView(self))
         self.content_area.addWidget(JPGToPDFView(self))
-        self._pdf_viewer = PDFViewer(self)
         self.content_area.addWidget(self._pdf_viewer)
 
 ################################# Slots #################################

@@ -13,8 +13,8 @@ class PDFMergerView(QMainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._parent_window = parent
         self.display_pdf_signal.connect(parent.display_pdf)
-        self.setWindowTitle("PDF Editor - Fusion de PDF")
         self.setGeometry(100, 100, 600, 400)
         self.init_ui()
 
@@ -75,11 +75,12 @@ class PDFMergerView(QMainWindow):
                      for i in range(self.file_list.count())]
 
         if pdf_files:
-            merge_pdf(GV.output_file, *pdf_files)
+            self._parent_window._topbar._current_file_path = GV.output_merged_pdf
+            merge_pdf(GV.output_merged_pdf, *pdf_files)
             QMessageBox.information(self, "Succès de la fusion de PDF",
-                                    f"Le PDF fusionné a été enregistré dans le dossier {GV.output_file}")
+                                    f"Le PDF fusionné a été enregistré dans le dossier {GV.output_merged_pdf}")
             # Ouvrir le fichier fusionné
-            self.display_pdf_signal.emit(GV.output_file)
+            self.display_pdf_signal.emit(GV.output_merged_pdf)
         else:
             QMessageBox.warning(self, "Echec de la fusion de PDF",
                                 "Aucun fichier PDF à fusionner.")
