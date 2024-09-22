@@ -1,5 +1,5 @@
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog
 from PySide6.QtCore import Signal, Slot
 
 from pathlib import Path
@@ -28,7 +28,7 @@ class TopBar(QMenuBar, QToolBar):
         # le parent est la plupart du temps la main_view
         super().__init__(parent)
         self._parent_window = parent
-        self._current_file_path = ""
+        self._current_file_path = Path()
         menu = parent.menuBar()
         self.change_view_signal.connect(parent.change_view)
         self.display_pdf_signal.connect(parent.display_pdf)
@@ -109,7 +109,6 @@ class TopBar(QMenuBar, QToolBar):
 
 ################################# Slots #################################
 
-
     @ Slot()
     def open_file_dialog(self):
         # Ouvre une boîte de dialogue pour sélectionner un fichier PDF
@@ -118,13 +117,30 @@ class TopBar(QMenuBar, QToolBar):
 
         if file_path:
             self.display_pdf_signal.emit(file_path)
-            last_path_component = Path(file_path).name
+            self._current_file_path = Path(file_path)
+            final_path_component = Path(file_path).name
             self._parent_window.setWindowTitle(
-                "PDF Editor - " + last_path_component)
+                "PDF Editor - " + final_path_component)
 
     @Slot()
     def rename(self):
-        pass
+        # Boîte de dialogue pour entrer le nouveau nom du fichier
+        new_file_name_without_extension, ok = \
+            QInputDialog.getText(self, "Renommer le fichier",
+                                 "Entrez ci-dessous le nouveau nom du fichier:\nATTENTION: n'ajoutez pas l'extension !")
+
+        if ok and new_file_name_without_extension:
+            try:
+                old_file = self._current_file_path
+                extension = old_file.suffix
+                new_file_name = new_file_name_without_extension + extension
+                new_file = old_file.parent / new_file_name
+                old_file.rename(new_file)
+                QMessageBox.information(
+                    self, "Succès", "Le fichier a été renommé avec succès !")
+            except Exception as e:
+                QMessageBox.warning(
+                    self, "Erreur", f"Impossible de renommer le fichier : {e}")
 
     @Slot()
     def quit_application(self):
