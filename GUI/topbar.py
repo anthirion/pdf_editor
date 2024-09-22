@@ -63,7 +63,7 @@ class TopBar(QMenuBar, QToolBar):
         edition_menu.addAction(self.search_action)
         # Sous-menu "Renommer"
         self.rename_action = QAction(QIcon(rename_icon), "Renommer", self)
-        self.rename_action.setShortcut("Ctrl+F")
+        self.rename_action.setShortcut("Ctrl+R")
         self.rename_action.triggered.connect(self.rename)
         edition_menu.addAction(self.rename_action)
 
