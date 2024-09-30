@@ -8,7 +8,6 @@ from Backend.pdf_operations import (
     merge_pdf
 )
 import global_variables as GV
-from pathlib import Path
 
 
 class PDFMergerView(QMainWindow):

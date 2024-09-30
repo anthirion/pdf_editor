@@ -3,7 +3,7 @@ from PIL import Image
 from typing import List
 
 
-def search_text(file_path: str, search: str) -> int:
+def text_occurences(file_path: str, search: str) -> int:
     """
     Cherche le mot ou groupe de mots 'search' dans le pdf
     @param search: mot ou groupe de mots à chercher
