@@ -32,7 +32,8 @@ class TopBar(QMenuBar, QToolBar):
         menu = parent.menuBar()
         self.change_view_signal.connect(parent.change_view)
         self.display_pdf_signal.connect(parent.display_pdf)
-        self.search_text.connect(parent._pdf_viewer.toggle_search_bar)
+        self.search_text.connect(
+            parent._pdf_viewer.search_bar.toggle_search_bar)
 
         """
         MenuBar
@@ -108,6 +109,7 @@ class TopBar(QMenuBar, QToolBar):
 
 
 ################################# Slots #################################
+
 
     @ Slot()
     def open_file_dialog(self):
