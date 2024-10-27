@@ -44,11 +44,12 @@ class HomePage(QMainWindow):
         # Grille des outils
         tools_grid = QGridLayout()
 
-        tools_name = ["Fusionner PDF",
-                      "Diviser PDF",
-                      "PDF en JPG",
-                      "JPG en PDF",
-                      ]
+        tools_name = [
+            "Fusionner PDF",
+            "Diviser PDF",
+            "PDF en JPG",
+            "JPG en PDF",
+        ]
 
         tools_desc = [
             "Combinez plusieurs fichiers PDF en un seul document. Glissez-déposez les fichiers pour les réorganiser.",

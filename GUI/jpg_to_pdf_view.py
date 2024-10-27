@@ -8,6 +8,8 @@ from Backend.pdf_operations import jpg_to_pdf
 
 
 class JPGToPDFView(QMainWindow):
+    # Signal émis demandant l'affichage du pdf dans le pdf viewer
+    # le signal transmet le chemin vers le fichier à afficher
     display_pdf_signal = Signal(str)
 
     def __init__(self, parent=None):

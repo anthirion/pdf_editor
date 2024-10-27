@@ -14,11 +14,9 @@ from GUI.resources import (
 
 class TopBar(QMenuBar, QToolBar):
     """
-    The TopBar class creates a menubar and a topbar
+    The TopBar is composed of a menubar and a topbar
     """
-    # Le signal envoie un entier qui indique la vue à afficher :
-    # 1 si vue de fusion des pdf (pdf_merger_view)
-    # 2 si vue de division des pdf (pdf_splitter_view), etc
+    # Le signal envoie un entier correspondant au numéro de la vue à afficher (voir fichier main_view.py)
     # pour plus de simplicité, les constantes sont définies dans l'enum ViewConstants
     change_view_signal = Signal(int)
     display_pdf_signal = Signal(str)
@@ -107,11 +105,9 @@ class TopBar(QMenuBar, QToolBar):
 
         parent.addToolBar(toolbar)
 
-
 ################################# Slots #################################
 
-
-    @ Slot()
+    @Slot()
     def open_file_dialog(self):
         # Ouvre une boîte de dialogue pour sélectionner un fichier PDF
         file_path, _ = QFileDialog.getOpenFileName(
