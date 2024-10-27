@@ -1,22 +1,6 @@
-from pypdf import PdfMerger, PdfReader
+from pypdf import PdfMerger
 from PIL import Image
 from typing import List
-
-
-def text_occurences(file_path: str, search: str) -> int:
-    """
-    Cherche le mot ou groupe de mots 'search' dans le pdf
-    @param search: mot ou groupe de mots à chercher
-    @param file_path: chemin vers le fichier où chercher le mot
-    """
-    global_occurences = 0
-    reader = PdfReader(file_path)
-    for page in reader.pages:
-        text = page.extract_text()
-        occurences_on_page = text.count(search)
-        if occurences_on_page > 0:
-            global_occurences += occurences_on_page
-    return global_occurences
 
 
 def merge_pdf(output_path: str, *pdf_paths):

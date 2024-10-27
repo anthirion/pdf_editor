@@ -34,8 +34,6 @@ class PDFViewer(QMainWindow):
         container.setLayout(containerLayout)
         self.setCentralWidget(container)
 
-################################# Méthodes #################################
-
     def display_pdf(self, pdf_file_path: str):
         self._pdf_doc.load(pdf_file_path)
         self._pdf_view.setDocument(self._pdf_doc)
@@ -55,8 +53,8 @@ class SearchBar(QWidget):
         self.hide()  # Masquer la barre de recherche par défaut
         self.is_visible = False
 
-        self.button_up = QPushButton(QIcon(arrow_up_icon), "")
-        self.button_down = QPushButton(QIcon(arrow_down_icon), "")
+        self.button_up = QPushButton("↑", self)
+        self.button_down = QPushButton("↓", self)
 
         # Disposition en HBoxLayout
         layout = QHBoxLayout(self)
@@ -115,16 +113,13 @@ class SearchBar(QWidget):
 
     @Slot()
     def on_button_up_clicked(self):
-        if (self._page_navigator.backAvailable):
-            self._current_location -= 1
-            # breakpoint()
-            self.get_result(self._current_location)
+        self._current_location -= 1
+        self.get_result(self._current_location)
 
     @Slot()
     def on_button_down_clicked(self):
-        if (self._page_navigator.forwardAvailable):
-            self._current_location += 1
-            self.get_result(self._current_location)
+        self._current_location += 1
+        self.get_result(self._current_location)
 
     @Slot()
     def toggle_search_bar(self):
