@@ -24,7 +24,7 @@ class PDFViewer(QMainWindow):
         # Ajout d'une barre de recherche
         self.search_bar = SearchBar(self)
         # Ajout d'une fonctionnalité de zoom avec la molette de la souris
-        self.zoom_manager = ZoomManager(self._pdf_view)
+        self.zoom_manager = ZoomManager(self)
 
         # Disposer les éléments les uns en dessous des autres
         container = QWidget()
@@ -38,6 +38,14 @@ class PDFViewer(QMainWindow):
         self._pdf_doc.load(pdf_file_path)
         self._pdf_view.setDocument(self._pdf_doc)
         self.search_bar._page_count = self._pdf_doc.pageCount()
+
+    def show_warning(self, message: str) -> None:
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setWindowTitle("Avertissement")
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec()
 
     ############################# Gestion d'évènements #############################
 
@@ -56,6 +64,7 @@ class PDFViewer(QMainWindow):
 class SearchBar(QWidget):
     def __init__(self, parent) -> None:
         super().__init__(parent)
+        self._parent = parent
         self._pdf_view = parent._pdf_view
         self._page_navigator = parent._nav
         self._search_model = parent._search_model
@@ -99,14 +108,6 @@ class SearchBar(QWidget):
         self._text_locations: list[QPdfLink] = []
         self._current_location = 0
 
-    def show_warning(self, message: str) -> None:
-        msg_box = QMessageBox(self)
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setWindowTitle("Avertissement")
-        msg_box.setText(message)
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec()
-
     def get_result(self, current_result: int) -> None:
         """
         Surligne le résultat courant et amène l'utilisateur à l'emplacement
@@ -114,7 +115,7 @@ class SearchBar(QWidget):
         @param current_result: numéro du résultat à afficher
         """
         if not self._text_locations:
-            self.show_warning("Aucun résultat trouvé")
+            self._parent.show_warning("Aucun résultat trouvé")
         elif current_result < len(self._text_locations):
             self._page_navigator.jump(self._text_locations[current_result])
             # surligne le résultat courant
@@ -161,8 +162,9 @@ class SearchBar(QWidget):
 
 
 class ZoomManager:
-    def __init__(self, pdf_view) -> None:
-        self._pdf_view = pdf_view
+    def __init__(self, parent) -> None:
+        self._parent = parent
+        self._pdf_view = parent._pdf_view
         self.zoom_level = 1.0  # Niveau de zoom initial
         self._ctrl_pressed = False
         self._plus_pressed = False
@@ -183,6 +185,11 @@ class ZoomManager:
         if self.zoom_level < 2.1:   # limite pour ne pas trop zoomer
             self.zoom_level += 0.1
             self._apply_zoom()
+        else:
+            # afficher un message d'avertissement pour avertir que l'utilisateur
+            # ne peut plus zoomer davantage
+            self._parent.show_warning(
+                "Vous avez atteind le niveau de zoom maximal")
 
     def zoom_out(self) -> None:
         """
@@ -193,6 +200,11 @@ class ZoomManager:
         if self.zoom_level > 0.2:   # limite pour ne pas trop dézoomer
             self.zoom_level -= 0.1
             self._apply_zoom()
+        else:
+            # afficher un message d'avertissement pour avertir que l'utilisateur
+            # ne peut plus dézoomer davantage
+            self._parent.show_warning(
+                "Vous avez atteind le niveau de dézoom maximal")
 
     def reset_zoom(self) -> None:
         """ Remet le zoom au niveau normal   """
