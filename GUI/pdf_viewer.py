@@ -48,7 +48,7 @@ class PDFViewer(QMainWindow):
 
     ############################# Réception de signaux #############################
     @Slot(int)
-    def zoom_handler(self, signal_value: int):
+    def zoom_handler(self, signal_value: int) -> None:
         match signal_value:
             case 0:
                 self.zoom_manager.reset_zoom()
@@ -134,7 +134,7 @@ class SearchBar(QWidget):
         self.get_result(self._current_location)
 
     @Slot()
-    def toggle_search_bar(self):
+    def toggle_search_bar(self) -> None:
         if self.is_visible:
             self.hide()
             self.is_visible = False
@@ -162,10 +162,16 @@ class SearchBar(QWidget):
 
 
 class ZoomManager:
+    ZOOM_STEP = 0.1
+    ZOOM_UPPER_LIMIT = 2.1
+    ZOOM_LOWER_LIMIT = 0.2
+    ZOOM_INIT_LEVEL = 1.0
+    TIMER_TIMEOUT = 100     # 100 ms
+
     def __init__(self, parent) -> None:
         self._parent = parent
         self._pdf_view = parent._pdf_view
-        self.zoom_level = 1.0  # Niveau de zoom initial
+        self.zoom_level = self.ZOOM_INIT_LEVEL
         self._warning_message = ""
         self.set_timer()
 
@@ -180,34 +186,32 @@ class ZoomManager:
         self.warning_timer.timeout.connect(self.show_zoom_warning)
 
     def zoom_in(self) -> None:
-        if self.zoom_level < 2.1:   # limite pour ne pas trop zoomer
-            self.zoom_level += 0.1
+        if self.zoom_level < self.ZOOM_UPPER_LIMIT:   # limite pour ne pas trop zoomer
+            self.zoom_level += self.ZOOM_STEP
             self._apply_zoom()
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus zoomer davantage
             self._warning_message = "Vous avez atteint le niveau de zoom maximal"
             # attendre 100ms pour prendre en compte le relachement de la touche +
-            self.warning_timer.start(100)
+            self.warning_timer.start(self.TIMER_TIMEOUT)
 
     def zoom_out(self) -> None:
-        if self.zoom_level > 0.2:   # limite pour ne pas trop dézoomer
-            self.zoom_level -= 0.1
+        if self.zoom_level > self.ZOOM_LOWER_LIMIT:   # limite pour ne pas trop dézoomer
+            self.zoom_level -= self.ZOOM_STEP
             self._apply_zoom()
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus dézoomer davantage
             self._warning_message = "Vous avez atteint le niveau de dézoom maximal"
             # attendre 100ms pour prendre en compte le relachement de la touche +
-            self.warning_timer.start(100)
+            self.warning_timer.start(self.TIMER_TIMEOUT)
 
     def reset_zoom(self) -> None:
-        """ Remet le zoom au niveau normal   """
-        self.zoom_level = 1.0
+        self.zoom_level = self.ZOOM_INIT_LEVEL
         self._apply_zoom()
 
     def _apply_zoom(self) -> None:
-        """ Applique le niveau de zoom au QPdfView."""
         self._pdf_view.setZoomFactor(self.zoom_level)
 
     def show_zoom_warning(self) -> None:
