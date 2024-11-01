@@ -16,11 +16,16 @@ class TopBar(QMenuBar, QToolBar):
     """
     The TopBar is composed of a menubar and a topbar
     """
-    # Le signal envoie un entier correspondant au numéro de la vue à afficher (voir fichier main_view.py)
+    # Le signal suivant envoie un entier correspondant au numéro de la vue à afficher (voir fichier main_view.py)
     # pour plus de simplicité, les constantes sont définies dans l'enum ViewConstants
     change_view_signal = Signal(int)
     display_pdf_signal = Signal(str)
     search_text = Signal()
+    # Le signal suivant envoie un entier indiquant le niveau de zoom que l'utilisateur souhaite
+    # Si cet entier est 1, cela signifie que l'utilisateur souhaite zoomer
+    # Si cet entier est -1, cela signifie que l'utilisateur souhaite dézoomer
+    # Si cet entier est 0, cela signifie que l'utilisateur souhaite réinitialiser le zoom
+    zoom_signal = Signal(int)
 
     def __init__(self, parent=None):
         # le parent est la plupart du temps la main_view
@@ -65,6 +70,32 @@ class TopBar(QMenuBar, QToolBar):
         self.rename_action.setShortcut("Ctrl+R")
         self.rename_action.triggered.connect(self.rename)
         edition_menu.addAction(self.rename_action)
+
+        # Menu Affichage
+        view_menu = menu.addMenu("Affichage")
+
+        # Sous-menu "Zoom"
+        zoom_menu = view_menu.addMenu("Zoom")
+
+        # Action "Zoom In"
+        zoom_in_action = QAction("Zoom In", self)
+        zoom_in_action.setShortcut("Ctrl++")
+        zoom_in_action.triggered.connect(self.zoom_in)
+
+        # Action "Zoom Out"
+        zoom_out_action = QAction("Zoom Out", self)
+        zoom_out_action.setShortcut("Ctrl+-")
+        zoom_out_action.triggered.connect(self.zoom_out)
+
+        # Action "Reset Zoom"
+        reset_zoom_action = QAction("Reset Zoom", self)
+        reset_zoom_action.setShortcut("Ctrl+0")
+        reset_zoom_action.triggered.connect(self.reset_zoom)
+
+        # Ajouter les actions au sous-menu "Zoom"
+        zoom_menu.addAction(zoom_in_action)
+        zoom_menu.addAction(zoom_out_action)
+        zoom_menu.addAction(reset_zoom_action)
 
         # Menu Outils
         tools_menu = menu.addMenu("Outils")
