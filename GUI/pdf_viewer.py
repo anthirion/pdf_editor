@@ -4,8 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtPdf import QPdfDocument, QPdfSearchModel, QPdfLink, QPdfPageNavigator
-from PySide6.QtCore import Slot, Qt, QEvent, QTimer
-from PySide6.QtGui import QKeyEvent
+from PySide6.QtCore import Slot, QTimer
 
 
 class PDFViewer(QMainWindow):
@@ -47,18 +46,19 @@ class PDFViewer(QMainWindow):
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
 
-    ############################# Gestion d'évènements #############################
-
-    def event(self, event: QEvent) -> bool:
-        if event.type() is QEvent.KeyPress:
-            self.zoom_manager.key_pressed(event)
-            if self.zoom_manager.should_zoom_in():
+    ############################# Réception de signaux #############################
+    @Slot(int)
+    def zoom_handler(self, signal_value: int):
+        match signal_value:
+            case 0:
+                self.zoom_manager.reset_zoom()
+            case 1:
                 self.zoom_manager.zoom_in()
-            elif self.zoom_manager.should_zoom_out():
+            case -1:
                 self.zoom_manager.zoom_out()
-        if event.type() is QEvent.KeyRelease:
-            self.zoom_manager.key_released(event)
-        return False    # l'évènement n'est pas bloqué et remonte aux objets parents
+            case _:
+                raise ValueError(
+                    f"Le signal zoom_signal a envoyé la valeur incorrecte {signal_value}")
 
 
 class SearchBar(QWidget):
@@ -166,11 +166,7 @@ class ZoomManager:
         self._parent = parent
         self._pdf_view = parent._pdf_view
         self.zoom_level = 1.0  # Niveau de zoom initial
-        self._ctrl_pressed = False
-        self._plus_pressed = False
-        self._minus_pressed = False
         self._warning_message = ""
-
         self.set_timer()
 
     def set_timer(self) -> None:
@@ -183,18 +179,7 @@ class ZoomManager:
         self.warning_timer.setSingleShot(True)
         self.warning_timer.timeout.connect(self.show_zoom_warning)
 
-    def should_zoom_in(self) -> bool:
-        return self._ctrl_pressed and self._plus_pressed
-
-    def should_zoom_out(self) -> bool:
-        return self._ctrl_pressed and self._minus_pressed
-
     def zoom_in(self) -> None:
-        """
-        Augmente le niveau de zoom
-        [ATTENTION] Toujours vérifier que le zoom doit être fait
-        avec la fonction should_zoom_in
-        """
         if self.zoom_level < 2.1:   # limite pour ne pas trop zoomer
             self.zoom_level += 0.1
             self._apply_zoom()
@@ -206,11 +191,6 @@ class ZoomManager:
             self.warning_timer.start(100)
 
     def zoom_out(self) -> None:
-        """
-        Diminue le niveau de zoom
-        [ATTENTION] Toujours vérifier que le dézoom doit être fait
-        avec la fonction should_zoom_out
-        """
         if self.zoom_level > 0.2:   # limite pour ne pas trop dézoomer
             self.zoom_level -= 0.1
             self._apply_zoom()
@@ -232,21 +212,3 @@ class ZoomManager:
 
     def show_zoom_warning(self) -> None:
         self._parent.show_warning(self._warning_message)
-
-    ############################# Gestion d'évènements #############################
-
-    def key_pressed(self, event: QKeyEvent) -> None:
-        if (event.key() == Qt.Key_Control):
-            self._ctrl_pressed = True
-        elif (event.text() == '+'):
-            self._plus_pressed = True
-        elif (event.text() == '-'):
-            self._minus_pressed = True
-
-    def key_released(self, event: QKeyEvent) -> None:
-        if (event.key() == Qt.Key_Control):
-            self._ctrl_pressed = False
-        elif (event.text() == '+'):
-            self._plus_pressed = False
-        elif (event.text() == '-'):
-            self._minus_pressed = False
