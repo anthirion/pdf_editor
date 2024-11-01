@@ -8,7 +8,7 @@ from PySide6.QtCore import Slot, QTimer
 
 
 class PDFViewer(QMainWindow):
-    def __init__(self, parent: QWidget = None) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self._pdf_view = QPdfView()
         # affiche toutes les pages du pdf
@@ -40,10 +40,9 @@ class PDFViewer(QMainWindow):
 
     def show_warning(self, message: str) -> None:
         msg_box = QMessageBox(self)
-        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setIcon(QMessageBox.Icon.Warning)
         msg_box.setWindowTitle("Avertissement")
         msg_box.setText(message)
-        msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
 
     ############################# Réception de signaux #############################
