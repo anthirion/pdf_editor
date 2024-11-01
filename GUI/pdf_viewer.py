@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtPdf import QPdfDocument, QPdfSearchModel, QPdfLink, QPdfPageNavigator
-from PySide6.QtCore import Slot, Qt, QEvent
+from PySide6.QtCore import Slot, Qt, QEvent, QTimer
 from PySide6.QtGui import QKeyEvent
 
 
@@ -56,7 +56,7 @@ class PDFViewer(QMainWindow):
                 self.zoom_manager.zoom_in()
             elif self.zoom_manager.should_zoom_out():
                 self.zoom_manager.zoom_out()
-        elif event.type() is QEvent.KeyRelease:
+        if event.type() is QEvent.KeyRelease:
             self.zoom_manager.key_released(event)
         return False    # l'évènement n'est pas bloqué et remonte aux objets parents
 
@@ -169,6 +169,19 @@ class ZoomManager:
         self._ctrl_pressed = False
         self._plus_pressed = False
         self._minus_pressed = False
+        self._warning_message = ""
+
+        self.set_timer()
+
+    def set_timer(self) -> None:
+        """
+        Lors de l'affichage d'un warning, les évènements ne sont plus pris en compte
+        Ce timer permet de mettre en place un court délai avant l'affichage d'un message
+        d'avertissement pour donner le temps à PyQt de capturer les évènements
+        """
+        self.warning_timer = QTimer()
+        self.warning_timer.setSingleShot(True)
+        self.warning_timer.timeout.connect(self.show_zoom_warning)
 
     def should_zoom_in(self) -> bool:
         return self._ctrl_pressed and self._plus_pressed
@@ -188,8 +201,9 @@ class ZoomManager:
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus zoomer davantage
-            self._parent.show_warning(
-                "Vous avez atteind le niveau de zoom maximal")
+            self._warning_message = "Vous avez atteint le niveau de zoom maximal"
+            # attendre 100ms pour prendre en compte le relachement de la touche +
+            self.warning_timer.start(100)
 
     def zoom_out(self) -> None:
         """
@@ -203,8 +217,9 @@ class ZoomManager:
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus dézoomer davantage
-            self._parent.show_warning(
-                "Vous avez atteind le niveau de dézoom maximal")
+            self._warning_message = "Vous avez atteint le niveau de dézoom maximal"
+            # attendre 100ms pour prendre en compte le relachement de la touche +
+            self.warning_timer.start(100)
 
     def reset_zoom(self) -> None:
         """ Remet le zoom au niveau normal   """
@@ -214,6 +229,9 @@ class ZoomManager:
     def _apply_zoom(self) -> None:
         """ Applique le niveau de zoom au QPdfView."""
         self._pdf_view.setZoomFactor(self.zoom_level)
+
+    def show_zoom_warning(self) -> None:
+        self._parent.show_warning(self._warning_message)
 
     ############################# Gestion d'évènements #############################
 
