@@ -3,7 +3,7 @@ from PIL import Image
 from typing import List
 
 
-def merge_pdf(output_path: str, *pdf_paths):
+def merge_pdf(output_path: str, *pdf_paths) -> None:
     """
     Fusionne plusieurs fichiers PDF en un seul.
 
@@ -37,8 +37,11 @@ def pdf_to_jpg():
 
 
 def jpg_to_pdf(jpg_files_list: List[str], pdf_path: str) -> str:
-    """
-    Retourne une chaine de caractères indiquant l'erreur produite ou
+    """Convertit des images au format jpg en un fichier pdf
+
+    :param jpg_files_list: liste de fichiers jpg
+    :param pdf_path: chemin du fichier pdf à créer
+    :return une chaine de caractères indiquant l'erreur produite ou
     "NO_ERROR" si pas d'erreur
     """
     try:

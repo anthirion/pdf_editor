@@ -11,6 +11,7 @@ from GUI.pdf_splitter_view import PDFSplitterView
 from GUI.pdf_to_jpg_view import PDFToJPGView
 from GUI.jpg_to_pdf_view import JPGToPDFView
 from GUI.pdf_viewer import PDFViewer
+from pathlib import Path
 import global_variables as GV
 
 
@@ -19,6 +20,8 @@ class PDFEditorMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
+        self._displayed_file = ""
+        self._files_to_delete: list[str] = []
         self._app = app
         self._pdf_viewer = PDFViewer(self)
         # Barre de menu et d'outils
@@ -44,6 +47,14 @@ class PDFEditorMainWindow(QMainWindow):
         self.content_area.addWidget(JPGToPDFView(self))
         self.content_area.addWidget(self._pdf_viewer)
 
+    def closeEvent(self, event):
+        # supprimer les fichiers renommés par l'utilisateur pour éviter de garder
+        # des fichiers inutiles
+        for file in self._files_to_delete:
+            file_path = Path(file)
+            file_path.unlink()
+        event.accept()
+
 ################################# Slots #################################
 
     @Slot(int)
@@ -51,6 +62,7 @@ class PDFEditorMainWindow(QMainWindow):
         self.content_area.setCurrentIndex(view_index)
 
     @Slot(str)
-    def display_pdf(self, pdf_file_path: str):
-        self._pdf_viewer.display_pdf(pdf_file_path)
+    def display_pdf(self, pdf_file: str):
         self.content_area.setCurrentIndex(GV.ViewConstants.ReaderView)
+        self._displayed_file = pdf_file
+        self._pdf_viewer.display_pdf(pdf_file)

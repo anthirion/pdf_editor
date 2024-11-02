@@ -1,5 +1,5 @@
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog
+from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QWidget
 from PySide6.QtCore import Signal, Slot
 
 from pathlib import Path
@@ -7,8 +7,8 @@ from pathlib import Path
 import global_variables as GV
 # importation des icones
 from GUI.resources import (
-    add_icon, open_icon, quit_icon, rename_icon,
-    search_icon, merge_icon, help_icon
+    add_icon, open_icon, quit_icon, save_icon,
+    save_as_icon, search_icon, merge_icon, help_icon
 )
 
 
@@ -27,11 +27,10 @@ class TopBar(QMenuBar, QToolBar):
     # Si cet entier est 0, cela signifie que l'utilisateur souhaite réinitialiser le zoom
     zoom_signal = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget):
         # le parent est la plupart du temps la main_view
         super().__init__(parent)
         self._parent_window = parent
-        self._current_file_path = Path()
         menu = parent.menuBar()
         """ Connect signals """
         self.change_view_signal.connect(parent.change_view)
@@ -47,6 +46,15 @@ class TopBar(QMenuBar, QToolBar):
         self.file_menu = menu.addMenu("Fichier")
         # Sous-menu "Nouveau"
         self.new_action = QAction(QIcon(add_icon), "Nouveau", self)
+        # Sous-menu "Enregistrer"
+        self.save_action = QAction(QIcon(save_icon), "Enregistrer", self)
+        self.save_action.setShortcut("Ctrl+S")
+        self.save_action.triggered.connect(self.save_file)
+        # Sous-menu "Enregistrer sous"
+        self.save_as_action = QAction(
+            QIcon(save_as_icon), "Enregistrer sous", self)
+        self.save_as_action.setShortcut("Ctrl+Shift+S")
+        self.save_as_action.triggered.connect(self.save_file_as)
         # Sous-menu "Ouvrir"
         self.open_action = QAction(QIcon(open_icon), "Ouvrir", self)
         self.open_action.setShortcut("Ctrl+O")
@@ -55,8 +63,10 @@ class TopBar(QMenuBar, QToolBar):
         self.quit_action = QAction(QIcon(quit_icon), "Quitter", self)
         self.quit_action.setShortcut("Ctrl+Q")
         self.quit_action.triggered.connect(self.quit_application)
-
+        # Ajouter les actions au menu Fichier
         self.file_menu.addAction(self.new_action)
+        self.file_menu.addAction(self.save_action)
+        self.file_menu.addAction(self.save_as_action)
         self.file_menu.addAction(self.open_action)
         self.file_menu.addAction(self.quit_action)
 
@@ -67,15 +77,9 @@ class TopBar(QMenuBar, QToolBar):
         self.search_action.setShortcut("Ctrl+F")
         self.search_action.triggered.connect(self.search_action_selected)
         edition_menu.addAction(self.search_action)
-        # Sous-menu "Renommer"
-        self.rename_action = QAction(QIcon(rename_icon), "Renommer", self)
-        self.rename_action.setShortcut("Ctrl+R")
-        self.rename_action.triggered.connect(self.rename)
-        edition_menu.addAction(self.rename_action)
 
         # Menu Affichage
         view_menu = menu.addMenu("Affichage")
-
         # Sous-menu "Zoom"
         zoom_menu = view_menu.addMenu("Zoom")
         # Action "Zoom In"
@@ -128,9 +132,9 @@ class TopBar(QMenuBar, QToolBar):
         """
         toolbar = QToolBar("Barre d'outils", self)
         toolbar.addAction(self.new_action)
+        toolbar.addAction(self.save_action)
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.search_action)
-        toolbar.addAction(self.rename_action)
 
         parent.addToolBar(toolbar)
 
@@ -144,30 +148,39 @@ class TopBar(QMenuBar, QToolBar):
 
         if file_path:
             self.display_pdf_signal.emit(file_path)
-            self._current_file_path = Path(file_path)
-            final_path_component = Path(file_path).name
-            self._parent_window.setWindowTitle(
-                "PDF Editor - " + final_path_component)
 
-    @Slot()
-    def rename(self):
-        # Boîte de dialogue pour entrer le nouveau nom du fichier
-        new_file_name_without_extension, ok = \
-            QInputDialog.getText(self, "Renommer le fichier",
-                                 "Entrez ci-dessous le nouveau nom du fichier:\nATTENTION: n'ajoutez pas l'extension !")
+    def save_file(self):
+        pass
 
-        if ok and new_file_name_without_extension:
+    def save_file_as(self):
+        default_directory = "/home/thiran/projets_persos/pdf_editor/pdf_examples/"
+        # Ouvrir une boîte de dialogue pour choisir le nom et l'emplacement du fichier à enregistrer
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Enregistrer le fichier sous", default_directory, "PDF Files (*.pdf);;All Files (*)"
+        )
+
+        if file_path:
             try:
-                old_file = self._current_file_path
-                extension = old_file.suffix
-                new_file_name = new_file_name_without_extension + extension
-                new_file = old_file.parent / new_file_name
-                old_file.rename(new_file)
+                # TODO: enregistrer un fichier non existant
+                source_file_path = Path(self._parent_window._displayed_file)
+                destination_file = Path(file_path)
+                self._parent_window._displayed_file = file_path
+
+                # Copier le contenu du fichier actuel vers le fichier de destination
+                destination_file.write_bytes(
+                    source_file_path.read_bytes())
+
                 QMessageBox.information(
-                    self, "Succès", "Le fichier a été renommé avec succès !")
+                    self, "Enregistrement", "Fichier enregistré avec succès.")
+
             except Exception as e:
-                QMessageBox.warning(
-                    self, "Erreur", f"Impossible de renommer le fichier : {e}")
+                # Message d'erreur en cas de problème lors de l'enregistrement
+                QMessageBox.critical(
+                    self, "Erreur d'enregistrement", f"Impossible d'enregistrer le fichier : {e}")
+        else:
+            # Si aucun chemin n'est sélectionné
+            QMessageBox.warning(self, "Enregistrement annulé",
+                                "Aucun fichier n'a été enregistré.")
 
     @Slot()
     def quit_application(self):

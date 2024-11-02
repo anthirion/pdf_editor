@@ -77,23 +77,13 @@ class PDFMergerView(QMainWindow):
                      for i in range(self.file_list.count())]
 
         if pdf_files:
-            self._parent_window._topbar._current_file_path = GV.output_merged_pdf
-            # Boîte de dialogue pour entrer le nom du fichier fusionné
-            output_file_name_without_extension, ok = \
-                QInputDialog.getText(self, "Renommer le fichier",
-                                     "Entrez ci-dessous le nom du PDF fusionné:\nATTENTION: n'ajoutez pas l'extension !")
-            # nom du fichier stockant le résultat de la fusion
-            if ok and output_file_name_without_extension:
-                extension = ".pdf"
-                new_output_file_name = output_file_name_without_extension
-                output_path = GV.default_save_dir + new_output_file_name + extension
-            else:
-                output_path = GV.output_merged_pdf  # nom par défaut
-            merge_pdf(output_path, *pdf_files)
-            QMessageBox.information(self, "Succès de la fusion de PDF",
-                                    f"Le PDF fusionné a été enregistré à l'emplacement {output_path}")
+            destination_path = GV.merged_pdf_default_name  # nom par défaut
+            merge_pdf(destination_path, *pdf_files)
+            # Supprimer le fichier créé par défaut à la fermeture de l'app
+            # si le fichier est renommé par l'utilisateur, le fichier ne sera pas supprimé
+            self._parent_window._files_to_delete.append(destination_path)
             # Ouvrir le fichier fusionné
-            self.display_pdf_signal.emit(output_path)
+            self.display_pdf_signal.emit(destination_path)
         else:
             QMessageBox.warning(self, "Echec de la fusion de PDF",
-                                "Aucun fichier PDF à fusionner.")
+                                "Aucun fichier PDF à fusionner trouvé.")

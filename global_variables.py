@@ -12,8 +12,8 @@ class ViewConstants(IntEnum):
 
 
 default_save_dir = "/home/thiran/projets_persos/pdf_editor/pdf_examples/"
-output_merged_pdf = default_save_dir + "merged.pdf"
-output_file_converted_from_jpg = default_save_dir + "converted.pdf"
+merged_pdf_default_name = default_save_dir + "merged.pdf"
+converted_pdf_from_jpg_name = default_save_dir + "converted.pdf"
 
 # Global variables for GUI
 default_spacing = 40
