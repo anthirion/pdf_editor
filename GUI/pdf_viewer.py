@@ -11,6 +11,36 @@ from Backend.pdf_operations import text_occurences
 from GUI.resources import arrow_up_icon, arrow_down_icon
 
 
+class PDFViewer(QWidget):
+    def __init__(self, pdf_file_path: str = ""):
+        super().__init__()
+        self._pdf_file_path = pdf_file_path
+        self._pdf_view = QPdfView()
+        # Permet l'affichage de toutes les pages du fichier pdf
+        self._pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
+        self.pdf_doc = QPdfDocument()
+        self._search_model = QPdfSearchModel()
+        self._search_model.setDocument(self.pdf_doc)
+        self._pdf_view.setSearchModel(self._search_model)
+        self._nav = self._pdf_view.pageNavigator()
+
+        # Ajout d'une barre de recherche
+        self.search_bar = SearchBar(self)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.search_bar)
+        layout.addWidget(self._pdf_view)
+
+
+################################# Méthodes #################################
+
+
+    def display_pdf(self, pdf_file_path: str) -> None:
+        self._pdf_file_path = pdf_file_path
+        self.pdf_doc.load(self._pdf_file_path)
+        self._pdf_view.setDocument(self.pdf_doc)
+
+
 class SearchBar(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -94,38 +124,3 @@ class SearchBar(QWidget):
                 self._current_occurence_index += 1
                 self._parent_widget._nav.jump(link)
                 break
-
-
-class PDFViewer(QMainWindow):
-    def __init__(self, parent=None, pdf_file_path: str = ""):
-        super().__init__(parent)
-        self._pdf_file_path = pdf_file_path
-        self._pdf_view = QPdfView()
-        # Permet l'affichage de toutes les pages du fichier pdf
-        self._pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
-        self.pdf_doc = QPdfDocument()
-        self._search_model = QPdfSearchModel()
-        self._search_model.setDocument(self.pdf_doc)
-        self._pdf_view.setSearchModel(self._search_model)
-        self._nav = self._pdf_view.pageNavigator()
-        self.setCentralWidget(self._pdf_view)
-
-        # Ajout d'une barre de recherche
-        self.search_bar = SearchBar(self)
-
-        # Disposition en HBoxLayout
-        container = QWidget()
-        containerLayout = QVBoxLayout(self)
-        containerLayout.addWidget(self.search_bar)
-        containerLayout.addWidget(self._pdf_view)
-        container.setLayout(containerLayout)
-        self.setCentralWidget(container)
-
-
-################################# Méthodes #################################
-
-
-    def display_pdf(self, pdf_file_path: str) -> None:
-        self._pdf_file_path = pdf_file_path
-        self.pdf_doc.load(self._pdf_file_path)
-        self._pdf_view.setDocument(self.pdf_doc)

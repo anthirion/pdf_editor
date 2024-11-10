@@ -1,5 +1,5 @@
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog
+from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog, QWidget
 from PySide6.QtCore import Signal, Slot
 
 from pathlib import Path
@@ -23,7 +23,7 @@ class TopBar(QMenuBar, QToolBar):
     display_pdf_signal = Signal(str)
     search_text = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         # le parent est la plupart du temps la main_view
         super().__init__(parent)
         self._parent_window = parent

@@ -69,7 +69,7 @@ class JPGToPDFView(QMainWindow):
             self.file_list.addItems(files)
 
     def convert_files(self):
-        self._parent_window._topbar._current_file_path = GV.output_file_converted_from_jpg
+        self._parent_window.topbar._current_file_path = GV.output_file_converted_from_jpg
         # Récupérer la liste des fichiers JPG sélectionnés par l'utilisateur
         jpg_files = [self.file_list.item(i).text()
                      for i in range(self.file_list.count())]

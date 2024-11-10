@@ -17,24 +17,16 @@ class PDFEditorMainWindow(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
         self._app = app
         self._tool_view = ToolView(self)
-        self._pdf_viewer = PDFViewer(self)
+        self._pdf_viewer = PDFViewer()
         # Barre de menu et d'outils
-        self._topbar = TopBar(self)
-        self.init_ui()
-
-    def init_ui(self):
-
-        # Widget central
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        main_layout = QHBoxLayout(central_widget)
+        self.topbar = TopBar(self)
 
         # Zone de contenu principale
         self.content_area = QStackedWidget()
-        main_layout.addWidget(self.content_area)
+        self.setCentralWidget(self.content_area)
 
         # Ajout des différentes vues
-        self.content_area.addWidget(HomePage(self))
+        self.content_area.addWidget(HomePage())
         self.content_area.addWidget(self._tool_view)
         self.content_area.addWidget(self._pdf_viewer)
 

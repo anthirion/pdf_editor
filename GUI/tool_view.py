@@ -7,7 +7,7 @@ from Backend.pdf_operations import (
 import global_variables as GV
 
 
-class ToolView(PySide6.QtWidgets.QMainWindow):
+class ToolView(PySide6.QtWidgets.QWidget):
     """
     Cette classe gère l'affichage des outils du logiciel à savoir :
     la fusion et séparation de pdf, ainsi que les conversions de formats.
@@ -19,10 +19,10 @@ class ToolView(PySide6.QtWidgets.QMainWindow):
     """
     display_pdf_signal = Signal(str)
 
-    def __init__(self, parent: PySide6.QtWidgets.QWidget, tool: int = 0) -> None:
-        super().__init__(parent)
-        self._parent_window = parent
-        self.display_pdf_signal.connect(parent.display_pdf)
+    def __init__(self, parent: PySide6.QtWidgets.QWidget = None, tool: int = 0) -> None:
+        super().__init__()
+        self._parent = parent
+        self.display_pdf_signal.connect(self._parent.display_pdf)
         self.setGeometry(100, 100, 600, 400)
         self.pdf_files: list[str] = []
         self.tool_index = tool
@@ -52,7 +52,7 @@ class ToolView(PySide6.QtWidgets.QMainWindow):
             self, self._caption, "", "PDF Files (*.pdf)")
         # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
         if self.pdf_files:
-            self._parent_window._topbar._current_file_path = GV.merged_pdf_default_path
+            self._parent.topbar._current_file_path = GV.merged_pdf_default_path
             message_box_title = "Succès de la conversion de PDF"
             message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.merged_pdf_default_path}"
             match self.tool_index:
