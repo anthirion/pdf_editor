@@ -16,11 +16,10 @@ class TopBar(QMenuBar, QToolBar):
     """
     The TopBar class creates a menubar and a topbar
     """
-    # Le signal envoie un entier qui indique la vue à afficher :
-    # 1 si vue de fusion des pdf (pdf_merger_view)
-    # 2 si vue de division des pdf (pdf_splitter_view), etc
-    # pour plus de simplicité, les constantes sont définies dans l'enum ViewConstants
-    change_view_signal = Signal(int)
+    # Le signal envoie un entier qui indique l'outil sélectionné par l'utilisateur.
+    # L'entier correspondant est donné par l'enum ToolConstants défini dans les variables globales
+    # Ensuite, en fonction de l'outil sélectionné, la vue adéquate sera affichée
+    display_tool_view_signal = Signal(int)
     display_pdf_signal = Signal(str)
     search_text = Signal()
 
@@ -30,7 +29,7 @@ class TopBar(QMenuBar, QToolBar):
         self._parent_window = parent
         self._current_file_path = Path()
         menu = parent.menuBar()
-        self.change_view_signal.connect(parent.change_view)
+        self.display_tool_view_signal.connect(parent.display_tool_view)
         self.display_pdf_signal.connect(parent.display_pdf)
         self.search_text.connect(
             parent._pdf_viewer.search_bar.toggle_search_bar)
@@ -155,21 +154,21 @@ class TopBar(QMenuBar, QToolBar):
     @ Slot()
     def merge_pdf_selected(self):
         self._parent_window.setWindowTitle("PDF Editor - Outil de fusion")
-        self.change_view_signal.emit(GV.ViewConstants.MergerView)
+        self.display_tool_view_signal.emit(GV.ToolConstants.MergerTool)
 
     @ Slot()
     def split_pdf_selected(self):
-        self._parent_window.setWindowTitle("PDF Editor - Outil de division")
-        self.change_view_signal.emit(GV.ViewConstants.SplitterView)
+        self._parent_window.setWindowTitle("PDF Editor - Outil de séparation")
+        self.display_tool_view_signal.emit(GV.ToolConstants.SplitterTool)
 
     @ Slot()
     def convert_pdf_to_jpg_selected(self):
         self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de PDF vers JPG")
-        self.change_view_signal.emit(GV.ViewConstants.PDFtoJPGView)
+        self.display_tool_view_signal.emit(GV.ToolConstants.PDFtoJPGConverter)
 
     @ Slot()
     def convert_jpg_to_pdf_selected(self):
         self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de JPG vers PDF")
-        self.change_view_signal.emit(GV.ViewConstants.JPGtoPDFView)
+        self.display_tool_view_signal.emit(GV.ToolConstants.JPGtoPDFConverter)

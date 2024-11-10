@@ -6,12 +6,8 @@ from PySide6.QtCore import Slot
 
 from GUI.topbar import TopBar
 from GUI.homepage import HomePage
-from GUI.pdf_merger_view import PDFMergerView
-from GUI.pdf_splitter_view import PDFSplitterView
-from GUI.pdf_to_jpg_view import PDFToJPGView
-from GUI.jpg_to_pdf_view import JPGToPDFView
+from GUI.tool_view import ToolView
 from GUI.pdf_viewer import PDFViewer
-import global_variables as GV
 
 
 class PDFEditorMainWindow(QMainWindow):
@@ -20,6 +16,7 @@ class PDFEditorMainWindow(QMainWindow):
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
         self._app = app
+        self._tool_view = ToolView(self)
         self._pdf_viewer = PDFViewer(self)
         # Barre de menu et d'outils
         self._topbar = TopBar(self)
@@ -38,19 +35,18 @@ class PDFEditorMainWindow(QMainWindow):
 
         # Ajout des différentes vues
         self.content_area.addWidget(HomePage(self))
-        self.content_area.addWidget(PDFMergerView(self))
-        self.content_area.addWidget(PDFSplitterView(self))
-        self.content_area.addWidget(PDFToJPGView(self))
-        self.content_area.addWidget(JPGToPDFView(self))
+        self.content_area.addWidget(self._tool_view)
         self.content_area.addWidget(self._pdf_viewer)
 
 ################################# Slots #################################
 
     @Slot(int)
-    def change_view(self, view_index):
-        self.content_area.setCurrentIndex(view_index)
+    def display_tool_view(self, tool_index: int) -> None:
+        self.content_area.setCurrentIndex(1)
+        self._tool_view.tool_index = tool_index
+        self._tool_view.treat_pdfs()
 
     @Slot(str)
-    def display_pdf(self, pdf_file_path: str):
+    def display_pdf(self, pdf_file_path: str) -> None:
+        self.content_area.setCurrentIndex(2)
         self._pdf_viewer.display_pdf(pdf_file_path)
-        self.content_area.setCurrentIndex(GV.ViewConstants.ReaderView)

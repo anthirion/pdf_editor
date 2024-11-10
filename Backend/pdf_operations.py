@@ -44,11 +44,11 @@ def merge_pdf(output_path: str, *pdf_paths):
         merger.close()
 
 
-def split_pdf():
+def split_pdf(output_path: str, *pdf_paths):
     pass
 
 
-def pdf_to_jpg():
+def pdf_to_jpg(output_path: str, *pdf_paths):
     pass
 
 

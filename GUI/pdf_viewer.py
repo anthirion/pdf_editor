@@ -125,7 +125,7 @@ class PDFViewer(QMainWindow):
 ################################# Méthodes #################################
 
 
-    def display_pdf(self, pdf_file_path: str):
+    def display_pdf(self, pdf_file_path: str) -> None:
         self._pdf_file_path = pdf_file_path
         self.pdf_doc.load(self._pdf_file_path)
         self._pdf_view.setDocument(self.pdf_doc)
