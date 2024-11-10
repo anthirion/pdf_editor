@@ -1,6 +1,9 @@
+from pathlib import Path
+import pdf2image
 from pypdf import PdfMerger, PdfReader
 from PIL import Image
-from typing import List
+
+import global_variables as GV
 
 
 def text_occurences(file_path: str, search: str) -> int:
@@ -19,11 +22,11 @@ def text_occurences(file_path: str, search: str) -> int:
     return global_occurences
 
 
-def merge_pdf(output_path: str, *pdf_paths):
+def merge_pdf(output_path: str, pdf_paths: list[str]):
     """
     Fusionne plusieurs fichiers PDF en un seul.
 
-    :param output_path: Chemin du fichier de sortie.
+    :param output_path: Chemin du fichier obtenu après fusion
     :param pdf_paths: Liste des chemins des fichiers PDF à fusionner.
     """
     merger = PdfMerger()
@@ -44,23 +47,36 @@ def merge_pdf(output_path: str, *pdf_paths):
         merger.close()
 
 
-def split_pdf(output_path: str, *pdf_paths):
+def split_pdf(output_path: str, pdf_path: str):
     pass
 
 
-def pdf_to_jpg(output_path: str, *pdf_paths):
-    pass
+def pdf_to_jpg(pdf_path: str, output_folder: str = GV.output_folder) -> None:
+    """
+    Convertit chaque page d'un fichier pdf en images jpg
+    :param pdf_path: chemin vers le fichier pdf à convertir
+    :param output_folder: chemin vers le dossier contenant les images jpg issues de la conversion
+    """
+    output_folder_path = Path(output_folder)
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+
+    images = pdf2image.convert_from_path(pdf_path)
+    for page_num, image in enumerate(images):
+        jpg_path = output_folder_path / f"page_{page_num+1}.jpg"
+        image.save(jpg_path, "JPEG")
 
 
-def jpg_to_pdf(jpg_files_list: List[str], pdf_path: str) -> str:
+def jpg_to_pdf(output_pdf_path: str, jpg_files_list: list[str]) -> str:
     """
     Retourne une chaine de caractères indiquant l'erreur produite ou
     "NO_ERROR" si pas d'erreur
+    :param output_pdf_path: chemin du fichier obtenu après conversion
+    :param jpg_files_list: liste de chemins vers des fichiers jpg à convertir
     """
     try:
         images = [Image.open(jpg) for jpg in jpg_files_list]
 
-        images[0].save(pdf_path, "PDF",
+        images[0].save(output_pdf_path, "PDF",
                        resolution=100.0,
                        save_all=True,
                        append_images=images[1:]

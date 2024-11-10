@@ -11,7 +11,8 @@ class ToolConstants(IntEnum):
 
 
 default_save_dir = "/home/thiran/projets_persos/pdf_editor/pdf_examples/"
-merged_pdf_default_path = default_save_dir + "merged.pdf"
+output_pdf_path = default_save_dir + "output.pdf"
+output_folder = default_save_dir + "output_jpgs"
 output_file_converted_from_jpg = default_save_dir + "converted.pdf"
 
 # Global variables for GUI

@@ -52,26 +52,35 @@ class ToolView(PySide6.QtWidgets.QWidget):
             self, self._caption, "", "PDF Files (*.pdf)")
         # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
         if self.pdf_files:
-            self._parent.topbar._current_file_path = GV.merged_pdf_default_path
+            self._parent.topbar._current_file_path = GV.output_pdf_path
             message_box_title = "Succès de la conversion de PDF"
-            message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.merged_pdf_default_path}"
+            message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.output_pdf_path}"
             match self.tool_index:
                 case GV.ToolConstants.MergerTool:
-                    merge_pdf(GV.merged_pdf_default_path, *self.pdf_files)
+                    merge_pdf(GV.output_pdf_path, self.pdf_files)
                     message_box_title = message_box_title.replace("conversion", "fusion")
                     message_box_text = message_box_text.replace("converti", "fusionné")
                 case GV.ToolConstants.SplitterTool:
-                    split_pdf(GV.merged_pdf_default_path, *self.pdf_files)
+                    split_pdf(GV.output_pdf_path, self.pdf_files)
                     message_box_title = message_box_title.replace("conversion", "division")
                     message_box_text = message_box_text.replace("converti", "divisé")
                 case GV.ToolConstants.JPGtoPDFConverter:
-                    jpg_to_pdf(GV.merged_pdf_default_path, *self.pdf_files)
+                    jpg_to_pdf(GV.output_pdf_path, self.pdf_files)
                 case GV.ToolConstants.PDFtoJPGConverter:
-                    pdf_to_jpg(GV.merged_pdf_default_path, *self.pdf_files)
+                    # si plusieurs fichiers sont spécifiés, on ne convertit que le premier
+                    pdf_to_convert = self.pdf_files[0]
+                    pdf_to_jpg(pdf_to_convert)
+                    message_box_text = f"Les images ont été enregistrées dans le dossier {GV.output_folder}"
 
+            # revenir à la homepage en attendant le traitement des fichiers
+            self._parent.content_area.setCurrentIndex(0)
             PySide6.QtWidgets.QMessageBox.information(self, message_box_title, message_box_text)
-            # Ouvrir le fichier fusionné
-            self.display_pdf_signal.emit(GV.merged_pdf_default_path)
+            # Afficher le fichier pdf obtenu après la transformation, sauf si le résultat de la
+            # transformation n'est pas un fichier pdf
+            if self.tool_index != GV.ToolConstants.PDFtoJPGConverter:
+                self.display_pdf_signal.emit(GV.output_pdf_path)
         else:
             PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
-                                                  "Aucun fichier PDF fourni")
+                                                  "Aucun fichier PDF ou JPG fourni")
+            # revenir à la homepage
+            self._parent.content_area.setCurrentIndex(0)
