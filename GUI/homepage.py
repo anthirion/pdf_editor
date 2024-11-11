@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QGridLayout, QSpacerItem, QSizePolicy,
 )
 from PySide6.QtGui import QPixmap
@@ -36,11 +36,12 @@ class HomePage(QWidget):
     def init_tools_grid(self):
         tools_grid = QGridLayout()
 
-        tools_name = ["Fusionner PDF",
-                      "Diviser PDF",
-                      "PDF en JPG",
-                      "JPG en PDF",
-                      ]
+        tools_name = [
+            "Fusionner PDF",
+            "Diviser PDF",
+            "PDF en JPG",
+            "JPG en PDF",
+        ]
 
         tools_desc = [
             "Combinez plusieurs fichiers PDF en un seul document. Glissez-déposez les fichiers pour les réorganiser.",

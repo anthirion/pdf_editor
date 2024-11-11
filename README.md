@@ -19,9 +19,10 @@ Les icones utilisées ont été reprises sur le repo GitHub de <a href="https://
 
 # Installation
 
-# Points à retenir
+# Problèmes rencontrés et résolutions implémentées
 <ul>
 <li>Utiliser un IntEnum plutôt qu'un Enum lorsqu'on manipule des entiers</li>
 <li>Un signal doit être attaché à une instance de classe et pas à une classe</li>
 <li>Un signal doit être connecté dans la classe qui le définit (dans le constructeur par exemple). Le slot associé doit donc utilisé la classe parent.</li>
+<li>L'affichage d'un message (d'erreur, d'avertissement ou d'information) bloque la prise en compte des évènements. Pour résoudre ce problème, mettre en place un timer avec un court délai (100 ms par exemple) au bout duquel le message sera affiché</li>
 </ul>
