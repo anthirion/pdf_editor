@@ -1,8 +1,8 @@
+from pathlib import Path
+
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog, QWidget
-from PySide6.QtCore import Signal, Slot
-
-from pathlib import Path
 
 import global_variables as GV
 # importation des icones
@@ -37,8 +37,8 @@ class TopBar(QMenuBar, QToolBar):
         self.display_tool_view_signal.connect(parent.display_tool_view)
         self.display_pdf_signal.connect(parent.display_pdf)
         self.search_text.connect(
-            parent._pdf_viewer.search_bar.toggle_search_bar)
-        self.zoom_signal.connect(parent._pdf_viewer.zoom_handler)
+            parent.pdf_viewer.search_bar.toggle_search_bar)
+        self.zoom_signal.connect(parent.pdf_viewer.zoom_handler)
 
         """
         MenuBar
@@ -134,7 +134,7 @@ class TopBar(QMenuBar, QToolBar):
 
         parent.addToolBar(toolbar)
 
-################################# Slots génériques #################################
+    ################################# Slots génériques #################################
 
     @Slot()
     def open_file_dialog(self):
@@ -177,26 +177,39 @@ class TopBar(QMenuBar, QToolBar):
     def search_action_selected(self):
         self.search_text.emit()
 
-####################### Slots changement de vue d'affichage #######################
+    ####################### Slots changement de vue d'affichage #######################
 
-    @ Slot()
+    @Slot()
     def merge_pdf_selected(self):
         self._parent_window.setWindowTitle("PDF Editor - Outil de fusion")
         self.display_tool_view_signal.emit(GV.ToolConstants.MergerTool)
 
-    @ Slot()
+    @Slot()
     def split_pdf_selected(self):
         self._parent_window.setWindowTitle("PDF Editor - Outil de séparation")
         self.display_tool_view_signal.emit(GV.ToolConstants.SplitterTool)
 
-    @ Slot()
+    @Slot()
     def convert_pdf_to_jpg_selected(self):
         self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de PDF vers JPG")
         self.display_tool_view_signal.emit(GV.ToolConstants.PDFtoJPGConverter)
 
-    @ Slot()
+    @Slot()
     def convert_jpg_to_pdf_selected(self):
         self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de JPG vers PDF")
         self.display_tool_view_signal.emit(GV.ToolConstants.JPGtoPDFConverter)
+
+    ################################# Slots gérant le zoom #################################
+    @Slot()
+    def zoom_in(self):
+        self.zoom_signal.emit(1)
+
+    @Slot()
+    def zoom_out(self):
+        self.zoom_signal.emit(-1)
+
+    @Slot()
+    def reset_zoom(self):
+        self.zoom_signal.emit(0)

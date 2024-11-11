@@ -1,26 +1,24 @@
-from pathlib import Path
-
+from PySide6.QtCore import Slot, QTimer
+from PySide6.QtPdf import QPdfDocument, QPdfSearchModel, QPdfLink, QPdfPageNavigator
+from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QLineEdit, QPushButton,
+    QWidget, QLineEdit, QPushButton,
     QHBoxLayout, QVBoxLayout, QMessageBox
 )
-from PySide6.QtPdfWidgets import QPdfView
-from PySide6.QtPdf import QPdfDocument, QPdfSearchModel, QPdfLink, QPdfPageNavigator
-from PySide6.QtCore import Slot, QTimer
 
 
-class PDFViewer(QMainWindow):
-    def __init__(self, parent: QWidget = None) -> None:
-        super().__init__(parent)
-        self._pdf_view = QPdfView()
+class PDFViewer(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+        self.pdf_view = QPdfView()
+        self._pdf_file = ""
         # affiche toutes les pages du pdf
-        self._pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
+        self.pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
         self._pdf_doc = QPdfDocument()
-        self._search_model = QPdfSearchModel()
-        self._search_model.setDocument(self._pdf_doc)
-        self._pdf_view.setSearchModel(self._search_model)
-        self._nav: QPdfPageNavigator = self._pdf_view.pageNavigator()
-        self.setCentralWidget(self._pdf_view)
+        self.search_model = QPdfSearchModel()
+        self.search_model.setDocument(self._pdf_doc)
+        self.pdf_view.setSearchModel(self.search_model)
+        self.nav: QPdfPageNavigator = self.pdf_view.pageNavigator()
 
         # Ajout d'une barre de recherche
         self.search_bar = SearchBar(self)
@@ -28,16 +26,13 @@ class PDFViewer(QMainWindow):
         self.zoom_manager = ZoomManager(self)
 
         # Disposer les éléments les uns en dessous des autres
-        container = QWidget()
-        containerLayout = QVBoxLayout(self)
-        containerLayout.addWidget(self.search_bar)
-        containerLayout.addWidget(self._pdf_view)
-        container.setLayout(containerLayout)
-        self.setCentralWidget(container)
+        pdf_layout = QVBoxLayout(self)
+        pdf_layout.addWidget(self.search_bar)
+        pdf_layout.addWidget(self.pdf_view)
 
     def display_pdf(self, pdf_file_path: str) -> None:
         self._pdf_doc.load(pdf_file_path)
-        self._pdf_view.setDocument(self._pdf_doc)
+        self.pdf_view.setDocument(self._pdf_doc)
         self.search_bar._page_count = self._pdf_doc.pageCount()
 
     def show_warning(self, message: str) -> None:
@@ -62,44 +57,21 @@ class PDFViewer(QMainWindow):
                 raise ValueError(
                     f"Le signal zoom_signal a envoyé la valeur incorrecte {signal_value}")
 
-
-class PDFViewer(QWidget):
-    def __init__(self, pdf_file: str = ""):
-        super().__init__()
-        self._pdf_file = pdf_file
-        self._pdf_view = QPdfView()
-        # Permet l'affichage de toutes les pages du fichier pdf
-        self._pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
-        self.pdf_doc = QPdfDocument()
-        self._search_model = QPdfSearchModel()
-        self._search_model.setDocument(self.pdf_doc)
-        self._pdf_view.setSearchModel(self._search_model)
-        self._nav = self._pdf_view.pageNavigator()
-
-        # Ajout d'une barre de recherche
-        self.search_bar = SearchBar(self)
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.search_bar)
-        layout.addWidget(self._pdf_view)
-
-
-################################# Méthodes #################################
-
+    ################################# Méthodes #################################
 
     def display_pdf(self, pdf_file: str) -> None:
         self._pdf_file = pdf_file
-        self.pdf_doc.load(self._pdf_file)
-        self._pdf_view.setDocument(self.pdf_doc)
+        self._pdf_doc.load(self._pdf_file)
+        self.pdf_view.setDocument(self._pdf_doc)
 
 
 class SearchBar(QWidget):
     def __init__(self, parent) -> None:
         super().__init__(parent)
         self._parent = parent
-        self._pdf_view = parent._pdf_view
-        self._page_navigator = parent._nav
-        self._search_model = parent._search_model
+        self.pdf_view = parent.pdf_view
+        self._pagenavigator = parent.nav
+        self.search_model = parent.search_model
 
         # Création de la barre de recherche et des boutons
         self.search_input = QLineEdit()
@@ -149,9 +121,9 @@ class SearchBar(QWidget):
         if not self._text_locations:
             self._parent.show_warning("Aucun résultat trouvé")
         elif current_result < len(self._text_locations):
-            self._page_navigator.jump(self._text_locations[current_result])
+            self._pagenavigator.jump(self._text_locations[current_result])
             # surligne le résultat courant
-            self._pdf_view.setCurrentSearchResultIndex(current_result)
+            self.pdf_view.setCurrentSearchResultIndex(current_result)
 
     ################################# Slots #################################
 
@@ -185,10 +157,10 @@ class SearchBar(QWidget):
         self._current_location = 0
         self._text_to_search = self.search_input.text()
         if self._text_to_search:
-            self._search_model.setSearchString(self._text_to_search)
+            self.search_model.setSearchString(self._text_to_search)
             for page in range(self._page_count):
                 self._text_locations.extend(
-                    self._search_model.resultsOnPage(page))
+                    self.search_model.resultsOnPage(page))
         # aller directement à l'emplacement du premier résultat
         self.get_result(0)
 
@@ -198,11 +170,11 @@ class ZoomManager:
     ZOOM_UPPER_LIMIT = 2.1
     ZOOM_LOWER_LIMIT = 0.2
     ZOOM_INIT_LEVEL = 1.0
-    TIMER_TIMEOUT = 100     # 100 ms
+    TIMER_TIMEOUT = 100  # 100 ms
 
     def __init__(self, parent) -> None:
         self._parent = parent
-        self._pdf_view = parent._pdf_view
+        self.pdf_view = parent.pdf_view
         self.zoom_level = self.ZOOM_INIT_LEVEL
         self._warning_message = ""
         self.set_timer()
@@ -218,7 +190,7 @@ class ZoomManager:
         self.warning_timer.timeout.connect(self.show_zoom_warning)
 
     def zoom_in(self) -> None:
-        if self.zoom_level < self.ZOOM_UPPER_LIMIT:   # limite pour ne pas trop zoomer
+        if self.zoom_level < self.ZOOM_UPPER_LIMIT:  # limite pour ne pas trop zoomer
             self.zoom_level += self.ZOOM_STEP
             self._apply_zoom()
         else:
@@ -229,7 +201,7 @@ class ZoomManager:
             self.warning_timer.start(self.TIMER_TIMEOUT)
 
     def zoom_out(self) -> None:
-        if self.zoom_level > self.ZOOM_LOWER_LIMIT:   # limite pour ne pas trop dézoomer
+        if self.zoom_level > self.ZOOM_LOWER_LIMIT:  # limite pour ne pas trop dézoomer
             self.zoom_level -= self.ZOOM_STEP
             self._apply_zoom()
         else:
@@ -244,7 +216,7 @@ class ZoomManager:
         self._apply_zoom()
 
     def _apply_zoom(self) -> None:
-        self._pdf_view.setZoomFactor(self.zoom_level)
+        self.pdf_view.setZoomFactor(self.zoom_level)
 
     def show_zoom_warning(self) -> None:
         self._parent.show_warning(self._warning_message)

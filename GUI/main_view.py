@@ -1,13 +1,11 @@
-from PySide6.QtWidgets import (
-    QMainWindow, QWidget,
-    QStackedWidget, QHBoxLayout,
-)
 from PySide6.QtCore import Slot
+from PySide6.QtWidgets import (
+    QMainWindow, QStackedWidget, )
 
-from GUI.topbar import TopBar
 from GUI.homepage import HomePage
-from GUI.tool_view import ToolView
 from GUI.pdf_viewer import PDFViewer
+from GUI.tool_view import ToolView
+from GUI.topbar import TopBar
 
 
 class PDFEditorMainWindow(QMainWindow):
@@ -17,7 +15,7 @@ class PDFEditorMainWindow(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
         self._app = app
         self._tool_view = ToolView(self)
-        self._pdf_viewer = PDFViewer()
+        self.pdf_viewer = PDFViewer()
         # Barre de menu et d'outils
         self.topbar = TopBar(self)
 
@@ -28,9 +26,9 @@ class PDFEditorMainWindow(QMainWindow):
         # Ajout des différentes vues
         self.content_area.addWidget(HomePage())
         self.content_area.addWidget(self._tool_view)
-        self.content_area.addWidget(self._pdf_viewer)
+        self.content_area.addWidget(self.pdf_viewer)
 
-################################# Slots #################################
+    ################################# Slots #################################
 
     @Slot(int)
     def display_tool_view(self, tool_index: int) -> None:
@@ -41,4 +39,4 @@ class PDFEditorMainWindow(QMainWindow):
     @Slot(str)
     def display_pdf(self, pdf_file_path: str) -> None:
         self.content_area.setCurrentIndex(2)
-        self._pdf_viewer.display_pdf(pdf_file_path)
+        self.pdf_viewer.display_pdf(pdf_file_path)
