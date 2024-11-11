@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import PySide6.QtWidgets
 from PySide6.QtCore import Signal
 
@@ -24,7 +26,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
         self._parent = parent
         self.display_pdf_signal.connect(self._parent.display_pdf)
         self.setGeometry(100, 100, 600, 400)
-        self.pdf_files: list[str] = []
+        self.pdf_files: list[Path] = []
         self.tool_index = tool
         self._caption = ""
 
@@ -48,8 +50,9 @@ class ToolView(PySide6.QtWidgets.QWidget):
         transformation (fusion, séparation, conversion) en fonction de l'outil choisi
         """
         self.set_caption()
-        self.pdf_files, _ = PySide6.QtWidgets.QFileDialog.getOpenFileNames(
+        selected_files, _ = PySide6.QtWidgets.QFileDialog.getOpenFileNames(
             self, self._caption, "", "PDF Files (*.pdf)")
+        self.pdf_files = [Path(file) for file in selected_files]
         # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
         if self.pdf_files:
             self._parent.topbar._current_file_path = GV.output_pdf_path

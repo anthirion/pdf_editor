@@ -1,63 +1,73 @@
+from importlib.metadata import FastPath
 from pathlib import Path
 import pdf2image
-from pypdf import PdfMerger, PdfReader
+from PIL.ImageCms import Flags
+from pypdf import PdfWriter, PdfReader
 from PIL import Image
 
 import global_variables as GV
 
 
-def text_occurences(file_path: str, search: str) -> int:
+def text_occurences(file_path: Path, search: str) -> int:
     """
     Cherche le mot ou groupe de mots 'search' dans le pdf
     @param search: mot ou groupe de mots à chercher
     @param file_path: chemin vers le fichier où chercher le mot
     """
-    global_occurences = 0
-    reader = PdfReader(file_path)
-    for page in reader.pages:
-        text = page.extract_text()
-        occurences_on_page = text.count(search)
-        if occurences_on_page > 0:
-            global_occurences += occurences_on_page
-    return global_occurences
+    if file_path.exists() and search:
+        global_occurences = 0
+        reader = PdfReader(file_path)
+        for page in reader.pages:
+            text = page.extract_text()
+            occurences_on_page = text.count(search)
+            if occurences_on_page > 0:
+                global_occurences += occurences_on_page
+        return global_occurences
+    else:
+        raise FileExistsError("Le fichier spécifié n'existe pas")
 
 
-def merge_pdf(output_path: str, pdf_paths: list[str]):
+def merge_pdf(output_path: Path, pdf_paths: list[Path]):
     """
     Fusionne plusieurs fichiers PDF en un seul.
 
     :param output_path: Chemin du fichier obtenu après fusion
     :param pdf_paths: Liste des chemins des fichiers PDF à fusionner.
     """
-    merger = PdfMerger()
+    if pdf_paths:
+        # indique si la liste de fichiers pdf contient au moins un fichier existant
+        pdf_paths_correct = False
+        if not output_path.exists():
+            output_path.touch()
 
-    try:
-        # Ajouter chaque fichier PDF à la fusion
-        for pdf in pdf_paths:
-            merger.append(pdf)
+        merger = PdfWriter()
+        try:
+            # Ajouter chaque fichier PDF à la fusion
+            for pdf in pdf_paths:
+                if pdf.exists():
+                    pdf_paths_correct = True
+                    merger.append(pdf)
+            # Écrire le fichier fusionné dans le fichier de sortie
+            with open(output_path, 'wb') as output_pdf:
+                merger.write(output_pdf)
+        except Exception as e:
+            print(f"Erreur lors de la fusion des PDF : {str(e)}")
+        finally:
+            if not pdf_paths_correct:
+                output_path.unlink()
+            merger.close()
 
-        # Écrire le fichier fusionné dans le fichier de sortie
-        with open(output_path, 'wb') as output_pdf:
-            merger.write(output_pdf)
 
-    except Exception as e:
-        print(f"Erreur lors de la fusion des PDF : {str(e)}")
-
-    finally:
-        merger.close()
-
-
-def split_pdf(output_path: str, pdf_path: str):
+def split_pdf(output_path: Path, pdf_path: Path):
     pass
 
 
-def pdf_to_jpg(pdf_path: str, output_folder: str = GV.output_folder) -> None:
+def pdf_to_jpg(pdf_path: Path, output_folder_path: Path = GV.output_folder) -> None:
     """
     Convertit chaque page d'un fichier pdf en images jpg
     :param pdf_path: chemin vers le fichier pdf à convertir
-    :param output_folder: chemin vers le dossier contenant les images jpg issues de la conversion
+    :param output_folder_path: chemin vers le dossier contenant les images jpg issues de la conversion
     """
-    output_folder_path = Path(output_folder)
     output_folder_path.mkdir(parents=True, exist_ok=True)
 
     images = pdf2image.convert_from_path(pdf_path)
@@ -66,7 +76,7 @@ def pdf_to_jpg(pdf_path: str, output_folder: str = GV.output_folder) -> None:
         image.save(jpg_path, "JPEG")
 
 
-def jpg_to_pdf(output_pdf_path: str, jpg_files_list: list[str]) -> str:
+def jpg_to_pdf(output_pdf_path: Path, jpg_files_list: list[Path]) -> str:
     """
     :param output_pdf_path: chemin du fichier obtenu après conversion
     :param jpg_files_list: liste de chemins vers des fichiers jpg à convertir

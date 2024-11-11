@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLineEdit, QPushButton,
     QHBoxLayout, QVBoxLayout
@@ -12,9 +14,9 @@ from GUI.resources import arrow_up_icon, arrow_down_icon
 
 
 class PDFViewer(QWidget):
-    def __init__(self, pdf_file_path: str = ""):
+    def __init__(self, pdf_file: str = ""):
         super().__init__()
-        self._pdf_file_path = pdf_file_path
+        self._pdf_file = pdf_file
         self._pdf_view = QPdfView()
         # Permet l'affichage de toutes les pages du fichier pdf
         self._pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
@@ -35,9 +37,9 @@ class PDFViewer(QWidget):
 ################################# Méthodes #################################
 
 
-    def display_pdf(self, pdf_file_path: str) -> None:
-        self._pdf_file_path = pdf_file_path
-        self.pdf_doc.load(self._pdf_file_path)
+    def display_pdf(self, pdf_file: str) -> None:
+        self._pdf_file = pdf_file
+        self.pdf_doc.load(self._pdf_file)
         self._pdf_view.setDocument(self.pdf_doc)
 
 
@@ -109,7 +111,7 @@ class SearchBar(QWidget):
             self._parent_widget._search_model.setSearchString(
                 self._text_to_search)
             # nb d'occurences du mot cherché dans le document entier
-            self._text_total_occurences = text_occurences(self._parent_widget._pdf_file_path,
+            self._text_total_occurences = text_occurences(Path(self._parent_widget._pdf_file_path),
                                                           self._text_to_search)
 
         if (self._text_to_search is not None):
