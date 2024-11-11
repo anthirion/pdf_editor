@@ -68,10 +68,10 @@ def pdf_to_jpg(pdf_path: str, output_folder: str = GV.output_folder) -> None:
 
 def jpg_to_pdf(output_pdf_path: str, jpg_files_list: list[str]) -> str:
     """
-    Retourne une chaine de caractères indiquant l'erreur produite ou
-    "NO_ERROR" si pas d'erreur
     :param output_pdf_path: chemin du fichier obtenu après conversion
     :param jpg_files_list: liste de chemins vers des fichiers jpg à convertir
+    :return chaine de caractères indiquant l'erreur produite ou
+    "NO_ERROR" si pas d'erreur
     """
     try:
         images = [Image.open(jpg) for jpg in jpg_files_list]
