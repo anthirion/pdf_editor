@@ -1,9 +1,8 @@
-from importlib.metadata import FastPath
 from pathlib import Path
+
 import pdf2image
-from PIL.ImageCms import Flags
-from pypdf import PdfWriter, PdfReader
 from PIL import Image
+from pypdf import PdfWriter, PdfReader
 
 import global_variables as GV
 
@@ -79,10 +78,11 @@ def pdf_to_jpg(pdf_path: Path, output_folder_path: Path = GV.output_folder) -> N
             output_folder_path.mkdir(parents=True, exist_ok=True)
             images = pdf2image.convert_from_path(pdf_path)
             for page_num, image in enumerate(images):
-                jpg_path = output_folder_path / f"page_{page_num+1}.jpg"
+                jpg_path = output_folder_path / f"page_{page_num + 1}.jpg"
                 image.save(jpg_path, "JPEG")
         except:
-            raise Exception("[pdf_to_jpg] Erreur lors de la conversion : vérifiez que le fichier PDF fourni est correct")
+            raise Exception(
+                "[pdf_to_jpg] Erreur lors de la conversion : vérifiez que le fichier PDF fourni est correct")
     else:
         raise FileNotFoundError(f"[pdf_to_jpg] {GV.file_not_found_error_msg}")
 

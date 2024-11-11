@@ -4,3 +4,4 @@ mypy==1.11.2
 pillow==10.4.0
 pathlib==1.0.1
 pdf2image==1.17.0
+flake8==7.1.1
