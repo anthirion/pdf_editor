@@ -58,22 +58,36 @@ class ToolView(PySide6.QtWidgets.QWidget):
             self._parent.topbar._current_file_path = GV.output_pdf_path
             message_box_title = "Succès de la conversion de PDF"
             message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.output_pdf_path}"
-            match self.tool_index:
-                case GV.ToolConstants.MergerTool:
-                    merge_pdf(GV.output_pdf_path, self.pdf_files)
-                    message_box_title = message_box_title.replace("conversion", "fusion")
-                    message_box_text = message_box_text.replace("converti", "fusionné")
-                case GV.ToolConstants.SplitterTool:
-                    split_pdf(GV.output_pdf_path, self.pdf_files)
-                    message_box_title = message_box_title.replace("conversion", "division")
-                    message_box_text = message_box_text.replace("converti", "divisé")
-                case GV.ToolConstants.JPGtoPDFConverter:
-                    jpg_to_pdf(GV.output_pdf_path, self.pdf_files)
-                case GV.ToolConstants.PDFtoJPGConverter:
-                    # si plusieurs fichiers sont spécifiés, on ne convertit que le premier
-                    pdf_to_convert = self.pdf_files[0]
-                    pdf_to_jpg(pdf_to_convert)
-                    message_box_text = f"Les images ont été enregistrées dans le dossier {GV.output_folder}"
+            try:
+                match self.tool_index:
+                    case GV.ToolConstants.MergerTool:
+                        merge_pdf(GV.output_pdf_path, self.pdf_files)
+                        message_box_title = message_box_title.replace("conversion", "fusion")
+                        message_box_text = message_box_text.replace("converti", "fusionné")
+                    case GV.ToolConstants.SplitterTool:
+                        split_pdf(GV.output_pdf_path, self.pdf_files)
+                        message_box_title = message_box_title.replace("conversion", "division")
+                        message_box_text = message_box_text.replace("converti", "divisé")
+                    case GV.ToolConstants.JPGtoPDFConverter:
+                        jpg_to_pdf(GV.output_pdf_path, self.pdf_files)
+                    case GV.ToolConstants.PDFtoJPGConverter:
+                        # si plusieurs fichiers sont spécifiés, on ne convertit que le premier
+                        pdf_to_convert = self.pdf_files[0]
+                        pdf_to_jpg(pdf_to_convert)
+                        message_box_text = f"Les images ont été enregistrées dans le dossier {GV.output_folder}"
+            # exceptions rejetées après l'échec d'une transformation (fusion, division ou conversion)
+            except FileNotFoundError:
+                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                                                      GV.file_not_found_error_msg)
+            except FileExistsError:
+                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                                                      GV.file_exists_error_msg)
+            except ValueError:
+                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                                                      GV.empty_list_error_msg)
+            except:
+                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                                                      "Une erreur inconnue s'est produite")
 
             # revenir à la homepage en attendant le traitement des fichiers
             self._parent.content_area.setCurrentIndex(0)
