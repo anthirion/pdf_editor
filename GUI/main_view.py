@@ -13,6 +13,8 @@ class PDFEditorMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
+        self._displayed_file = ""
+        self._files_to_delete: list[str] = []
         self._app = app
         self._tool_view = ToolView(self)
         self.pdf_viewer = PDFViewer()
@@ -28,7 +30,15 @@ class PDFEditorMainWindow(QMainWindow):
         self.content_area.addWidget(self._tool_view)
         self.content_area.addWidget(self.pdf_viewer)
 
-    ################################# Slots #################################
+    def closeEvent(self, event):
+        # supprimer les fichiers renommés par l'utilisateur pour éviter de garder
+        # des fichiers inutiles
+        for file in self._files_to_delete:
+            file_path = Path(file)
+            file_path.unlink()
+        event.accept()
+
+################################# Slots #################################
 
     @Slot(int)
     def display_tool_view(self, tool_index: int) -> None:

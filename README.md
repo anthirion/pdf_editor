@@ -15,7 +15,7 @@ Cette application a été créée par Antoine Thirion. Si d'autres projets simil
 
 # Choix techniques
 Cette application est codée entièrement en python. Elle utilise la librairie <a href="https://pypdf.readthedocs.io/en/stable/index.html">pypdf</a> pour effectuer les différentes opérations sur les fichiers PDF et librairie graphique PySide6 pour l'interface graphique.
-Les icones utilisées ont été reprises sur le repo GitHub de <a href="https://github.com/LibreOffice/core/tree/master/icon-themes/elementary/cmd">LibreOffice</a>.
+Les icones utilisées ont été reprises sur le repo GitHub de <a href="https://github.com/LibreOffice/core/tree/master/icon-themes/colibre/cmd">LibreOffice</a>. Certaines icones ont aussi été récupérées <a href="https://github.com/LibreOffice/core/tree/master/icon-themes/elementary/cmd">icic</a>.
 
 # Installation
 

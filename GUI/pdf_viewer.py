@@ -37,10 +37,9 @@ class PDFViewer(QWidget):
 
     def show_warning(self, message: str) -> None:
         msg_box = QMessageBox(self)
-        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setIcon(QMessageBox.Icon.Warning)
         msg_box.setWindowTitle("Avertissement")
         msg_box.setText(message)
-        msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
 
     ############################# Réception de signaux #############################
