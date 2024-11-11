@@ -11,7 +11,6 @@ class PDFViewer(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.pdf_view = QPdfView()
-        self._pdf_file = ""
         # affiche toutes les pages du pdf
         self.pdf_view.setPageMode(QPdfView.PageMode.MultiPage)
         self._pdf_doc = QPdfDocument()
@@ -33,7 +32,7 @@ class PDFViewer(QWidget):
     def display_pdf(self, pdf_file_path: str) -> None:
         self._pdf_doc.load(pdf_file_path)
         self.pdf_view.setDocument(self._pdf_doc)
-        self.search_bar._page_count = self._pdf_doc.pageCount()
+        self.search_bar.page_count = self._pdf_doc.pageCount()
 
     def show_warning(self, message: str) -> None:
         msg_box = QMessageBox(self)
@@ -55,13 +54,6 @@ class PDFViewer(QWidget):
             case _:
                 raise ValueError(
                     f"Le signal zoom_signal a envoyé la valeur incorrecte {signal_value}")
-
-    ################################# Méthodes #################################
-
-    def display_pdf(self, pdf_file: str) -> None:
-        self._pdf_file = pdf_file
-        self._pdf_doc.load(self._pdf_file)
-        self.pdf_view.setDocument(self._pdf_doc)
 
 
 class SearchBar(QWidget):
@@ -105,7 +97,7 @@ class SearchBar(QWidget):
         Initialise des attributs utiles à la recherche d'un mot
         """
         # nombre de pages du document chargé
-        self._page_count = 0
+        self.page_count = 0
         self._text_to_search = ""
         # numéros de page où des résultats de recherche ont été trouvés
         self._text_locations: list[QPdfLink] = []
@@ -157,7 +149,7 @@ class SearchBar(QWidget):
         self._text_to_search = self.search_input.text()
         if self._text_to_search:
             self.search_model.setSearchString(self._text_to_search)
-            for page in range(self._page_count):
+            for page in range(self.page_count):
                 self._text_locations.extend(
                     self.search_model.resultsOnPage(page))
         # aller directement à l'emplacement du premier résultat
