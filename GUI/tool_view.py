@@ -3,10 +3,10 @@ from pathlib import Path
 import PySide6.QtWidgets
 from PySide6.QtCore import Signal
 
+import global_variables as GV
 from Backend.pdf_operations import (
     merge_pdf, split_pdf, jpg_to_pdf, pdf_to_jpg
 )
-import global_variables as GV
 
 
 class ToolView(PySide6.QtWidgets.QWidget):
@@ -95,7 +95,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
             # Afficher le fichier pdf obtenu après la transformation, sauf si le résultat de la
             # transformation n'est pas un fichier pdf
             if self.tool_index != GV.ToolConstants.PDFtoJPGConverter:
-                self.display_pdf_signal.emit(GV.output_pdf_path)
+                self.display_pdf_signal.emit(str(GV.output_pdf_path))
         else:
             PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
                                                   "Aucun fichier PDF ou JPG fourni")

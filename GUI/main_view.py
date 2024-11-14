@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import (
     QMainWindow, QStackedWidget, )
@@ -38,7 +40,7 @@ class PDFEditorMainWindow(QMainWindow):
             file_path.unlink()
         event.accept()
 
-################################# Slots #################################
+    ################################# Slots #################################
 
     @Slot(int)
     def display_tool_view(self, tool_index: int) -> None:
