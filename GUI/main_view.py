@@ -50,7 +50,5 @@ class PDFEditorMainWindow(QMainWindow):
 
     @Slot(str)
     def display_pdf(self, pdf_file_path: str) -> None:
-        print("DISPLAY PDF")
         self.content_area.setCurrentIndex(2)
-        breakpoint()
         self.pdf_viewer.display_pdf(pdf_file_path)
