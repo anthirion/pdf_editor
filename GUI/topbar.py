@@ -134,7 +134,7 @@ class TopBar(QMenuBar, QToolBar):
         """
         toolbar = QToolBar("Barre d'outils", self)
         # toolbar.addAction(self.new_action)
-        toolbar.addAction(self.save_action)
+        toolbar.addAction(self.save_as_action)
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.search_action)
 
