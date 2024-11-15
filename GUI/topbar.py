@@ -2,12 +2,12 @@ from pathlib import Path
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QInputDialog, QWidget
+from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QWidget
 
 import global_variables as GV
 # importation des icones
 from GUI.resources import (
-    add_icon, open_icon, quit_icon, save_icon,
+    open_icon, quit_icon, save_icon,
     save_as_icon, search_icon, merge_icon, help_icon
 )
 
@@ -46,7 +46,8 @@ class TopBar(QMenuBar, QToolBar):
         # Menu Fichier
         self.file_menu = menu.addMenu("Fichier")
         # Sous-menu "Nouveau"
-        self.new_action = QAction(QIcon(add_icon), "Nouveau", self)
+        # self.new_action = QAction(QIcon(add_icon), "Nouveau", self)
+        # self.new_action.setShortcut("Ctrl+N")
         # Sous-menu "Enregistrer"
         self.save_action = QAction(QIcon(save_icon), "Enregistrer", self)
         self.save_action.setShortcut("Ctrl+S")
@@ -132,14 +133,14 @@ class TopBar(QMenuBar, QToolBar):
         ToolBar
         """
         toolbar = QToolBar("Barre d'outils", self)
-        toolbar.addAction(self.new_action)
+        # toolbar.addAction(self.new_action)
         toolbar.addAction(self.save_action)
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.search_action)
 
         parent.addToolBar(toolbar)
 
-################################# Slots génériques #################################
+    ################################# Slots génériques #################################
 
     @Slot()
     def open_file_dialog(self):
@@ -191,7 +192,7 @@ class TopBar(QMenuBar, QToolBar):
     def search_action_selected(self):
         self.search_text.emit()
 
-####################### Slots changement de vue d'affichage #######################
+    ####################### Slots changement de vue d'affichage #######################
 
     @Slot()
     def merge_pdf_selected(self):
@@ -215,7 +216,7 @@ class TopBar(QMenuBar, QToolBar):
             "PDF Editor - Outil de convertion de JPG vers PDF")
         self.display_tool_view_signal.emit(GV.ToolConstants.JPGtoPDFConverter)
 
-################################# Slots gérant le zoom #################################
+    ################################# Slots gérant le zoom #################################
     @Slot()
     def zoom_in(self):
         self.zoom_signal.emit(1)
