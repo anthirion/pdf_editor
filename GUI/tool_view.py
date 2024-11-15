@@ -97,7 +97,5 @@ class ToolView(PySide6.QtWidgets.QWidget):
             if self.tool_index != GV.ToolConstants.PDFtoJPGConverter:
                 self.display_pdf_signal.emit(str(GV.output_pdf_path))
         else:
-            PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
-                                                  "Aucun fichier PDF ou JPG fourni")
             # revenir à la homepage
             self._parent.content_area.setCurrentIndex(0)

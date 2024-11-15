@@ -66,7 +66,7 @@ class TopBar(QMenuBar, QToolBar):
         self.quit_action.setShortcut("Ctrl+Q")
         self.quit_action.triggered.connect(self.quit_application)
         # Ajouter les actions au menu Fichier
-        self.file_menu.addAction(self.new_action)
+        # self.file_menu.addAction(self.new_action)
         self.file_menu.addAction(self.save_action)
         self.file_menu.addAction(self.save_as_action)
         self.file_menu.addAction(self.open_action)
