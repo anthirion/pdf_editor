@@ -2,9 +2,10 @@ from pathlib import Path
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMenuBar, QToolBar, QFileDialog, QMessageBox, QWidget
+from PySide6.QtWidgets import QToolBar, QFileDialog, QMessageBox, QWidget
 
 import global_variables as GV
+from GUI.main_view import PDFEditorMainWindow
 # importation des icones
 from GUI.resources import (
     open_icon, quit_icon, save_icon,
@@ -12,7 +13,7 @@ from GUI.resources import (
 )
 
 
-class TopBar(QMenuBar, QToolBar):
+class TopBar(QWidget):
     """
     The TopBar is composed of a menubar and a topbar
     """
@@ -28,60 +29,64 @@ class TopBar(QMenuBar, QToolBar):
     # Si cet entier est 0, cela signifie que l'utilisateur souhaite réinitialiser le zoom
     zoom_signal = Signal(int)
 
-    def __init__(self, parent: QWidget):
-        # le parent est la plupart du temps la main_view
-        super().__init__(parent)
-        self._parent_window = parent
+    def __init__(self, parent: PDFEditorMainWindow) -> None:
+        super().__init__()
+        self._parent = parent
         self._current_file_path = Path()
-        menu = parent.menuBar()
-        self.display_tool_view_signal.connect(parent.display_tool_view)
-        self.display_pdf_signal.connect(parent.display_pdf)
-        self.search_text.connect(
-            parent.pdf_viewer.search_bar.toggle_search_bar)
-        self.zoom_signal.connect(parent.pdf_viewer.zoom_handler)
+        self._menu = parent.menubar
+        self.connect_signals()
+        self.init_topbar()
 
+    def connect_signals(self) -> None:
+        self.display_tool_view_signal.connect(self._parent.display_tool_view)
+        self.display_pdf_signal.connect(self._parent.display_pdf)
+        self.search_text.connect(
+            self._parent.pdf_viewer.search_bar.toggle_search_bar)
+        self.zoom_signal.connect(self._parent.pdf_viewer.zoom_handler)
+
+    def init_topbar(self) -> None:
         """
-        MenuBar
+        MenuBar initialization
         """
         # Menu Fichier
-        self.file_menu = menu.addMenu("Fichier")
+        file_menu = self._menu.addMenu("Fichier")
         # Sous-menu "Nouveau"
         # self.new_action = QAction(QIcon(add_icon), "Nouveau", self)
         # self.new_action.setShortcut("Ctrl+N")
         # Sous-menu "Enregistrer"
-        self.save_action = QAction(QIcon(save_icon), "Enregistrer", self)
-        self.save_action.setShortcut("Ctrl+S")
-        self.save_action.triggered.connect(self.save_file)
+        save_action = QAction(QIcon(save_icon), "Enregistrer", self)
+        save_action.setShortcut("Ctrl+S")
+        save_action.triggered.connect(self.save_file)
         # Sous-menu "Enregistrer sous"
-        self.save_as_action = QAction(
+        save_as_action = QAction(
             QIcon(save_as_icon), "Enregistrer sous", self)
-        self.save_as_action.setShortcut("Ctrl+Shift+S")
-        self.save_as_action.triggered.connect(self.save_file_as)
+        save_as_action.setShortcut("Ctrl+Shift+S")
+        save_as_action.triggered.connect(self.save_file_as)
         # Sous-menu "Ouvrir"
-        self.open_action = QAction(QIcon(open_icon), "Ouvrir", self)
-        self.open_action.setShortcut("Ctrl+O")
-        self.open_action.triggered.connect(self.open_file_dialog)
+        open_action = QAction(QIcon(open_icon), "Ouvrir", self)
+        open_action.setShortcut("Ctrl+O")
+        open_action.triggered.connect(self.open_file_dialog)
         # Sous-menu "Quitter"
-        self.quit_action = QAction(QIcon(quit_icon), "Quitter", self)
-        self.quit_action.setShortcut("Ctrl+Q")
-        self.quit_action.triggered.connect(self.quit_application)
+        quit_action = QAction(QIcon(quit_icon), "Quitter", self)
+        quit_action.setShortcut("Ctrl+Q")
+        quit_action.triggered.connect(self.quit_application)
         # Ajouter les actions au menu Fichier
-        # self.file_menu.addAction(self.new_action)
-        self.file_menu.addAction(self.save_action)
-        self.file_menu.addAction(self.save_as_action)
-        self.file_menu.addAction(self.open_action)
-        self.file_menu.addAction(self.quit_action)
+        # file_menu.addAction(self.new_action)
+        file_menu.addAction(save_action)
+        file_menu.addAction(save_as_action)
+        file_menu.addAction(open_action)
+        file_menu.addAction(quit_action)
 
         # Menu Edition
-        edition_menu = menu.addMenu("Edition")
+        edition_menu = self._menu.addMenu("Edition")
         # Sous-menu "Rechercher"
-        self.search_action = QAction(QIcon(search_icon), "Rechercher", self)
-        self.search_action.setShortcut("Ctrl+F")
-        self.search_action.triggered.connect(self.search_action_selected)
-        edition_menu.addAction(self.search_action)
+        search_action = QAction(QIcon(search_icon), "Rechercher", self)
+        search_action.setShortcut("Ctrl+F")
+        search_action.triggered.connect(self.search_action_selected)
+        edition_menu.addAction(search_action)
 
         # Menu Affichage
-        view_menu = menu.addMenu("Affichage")
+        view_menu = self._menu.addMenu("Affichage")
         # Sous-menu "Zoom"
         zoom_menu = view_menu.addMenu("Zoom")
         # Action "Zoom In"
@@ -102,7 +107,7 @@ class TopBar(QMenuBar, QToolBar):
         zoom_menu.addAction(reset_zoom_action)
 
         # Menu Outils
-        tools_menu = menu.addMenu("Outils")
+        tools_menu = self._menu.addMenu("Outils")
         # Sous-menu "Fusionner PDF"
         merge_pdf_action = QAction(QIcon(merge_icon), "Fusionner PDF", self)
         merge_pdf_action.triggered.connect(self.merge_pdf_selected)
@@ -124,26 +129,26 @@ class TopBar(QMenuBar, QToolBar):
         tools_menu.addAction(convert_jpg_to_pdf_action)
 
         # Menu Aide
-        help_menu = menu.addMenu("Aide")
+        help_menu = self._menu.addMenu("Aide")
         # Sous-menu "Obtenir de l'aide"
         get_online_help = QAction(QIcon(help_icon), "Obtenir de l'aide", self)
         help_menu.addAction(get_online_help)
 
         """
-        ToolBar
+        ToolBar initialization
         """
         toolbar = QToolBar("Barre d'outils", self)
         # toolbar.addAction(self.new_action)
-        toolbar.addAction(self.save_as_action)
-        toolbar.addAction(self.open_action)
-        toolbar.addAction(self.search_action)
+        toolbar.addAction(save_as_action)
+        toolbar.addAction(open_action)
+        toolbar.addAction(search_action)
 
-        parent.addToolBar(toolbar)
+        self._parent.addToolBar(toolbar)
 
     ################################# Slots génériques #################################
 
     @Slot()
-    def open_file_dialog(self):
+    def open_file_dialog(self) -> None:
         # Ouvre une boîte de dialogue pour sélectionner un fichier PDF
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Ouvrir un fichier", "", "PDF Files (*.pdf);;All Files (*)")
@@ -151,10 +156,10 @@ class TopBar(QMenuBar, QToolBar):
         if file_path:
             self.display_pdf_signal.emit(file_path)
 
-    def save_file(self):
+    def save_file(self) -> None:
         pass
 
-    def save_file_as(self):
+    def save_file_as(self) -> None:
         default_directory = "/home/thiran/projets_persos/pdf_editor/pdf_examples/"
         # Ouvrir une boîte de dialogue pour choisir le nom et l'emplacement du fichier à enregistrer
         file_path, _ = QFileDialog.getSaveFileName(
@@ -164,9 +169,9 @@ class TopBar(QMenuBar, QToolBar):
         if file_path:
             try:
                 # TODO: enregistrer un fichier non existant
-                source_file_path = Path(self._parent_window._displayed_file)
+                source_file_path = Path(self._parent.displayed_file)
                 destination_file = Path(file_path)
-                self._parent_window._displayed_file = file_path
+                self._parent.displayed_file = file_path
 
                 # Copier le contenu du fichier actuel vers le fichier de destination
                 destination_file.write_bytes(
@@ -185,46 +190,50 @@ class TopBar(QMenuBar, QToolBar):
                                 "Aucun fichier n'a été enregistré.")
 
     @Slot()
-    def quit_application(self):
-        self._parent_window._app.instance().quit()
+    def quit_application(self) -> None:
+        app = self._parent.app.instance()
+        if app is not None:
+            app.quit()
+        else:
+            raise RuntimeError("Aucune instance de l'application n'est disponible.")
 
     @Slot()
-    def search_action_selected(self):
+    def search_action_selected(self) -> None:
         self.search_text.emit()
 
     ####################### Slots changement de vue d'affichage #######################
 
     @Slot()
-    def merge_pdf_selected(self):
-        self._parent_window.setWindowTitle("PDF Editor - Outil de fusion")
+    def merge_pdf_selected(self) -> None:
+        self._parent.setWindowTitle("PDF Editor - Outil de fusion")
         self.display_tool_view_signal.emit(GV.ToolConstants.MergerTool)
 
     @Slot()
-    def split_pdf_selected(self):
-        self._parent_window.setWindowTitle("PDF Editor - Outil de séparation")
+    def split_pdf_selected(self) -> None:
+        self._parent.setWindowTitle("PDF Editor - Outil de séparation")
         self.display_tool_view_signal.emit(GV.ToolConstants.SplitterTool)
 
     @Slot()
-    def convert_pdf_to_jpg_selected(self):
-        self._parent_window.setWindowTitle(
+    def convert_pdf_to_jpg_selected(self) -> None:
+        self._parent.setWindowTitle(
             "PDF Editor - Outil de convertion de PDF vers JPG")
         self.display_tool_view_signal.emit(GV.ToolConstants.PDFtoJPGConverter)
 
     @Slot()
-    def convert_jpg_to_pdf_selected(self):
-        self._parent_window.setWindowTitle(
+    def convert_jpg_to_pdf_selected(self) -> None:
+        self._parent.setWindowTitle(
             "PDF Editor - Outil de convertion de JPG vers PDF")
         self.display_tool_view_signal.emit(GV.ToolConstants.JPGtoPDFConverter)
 
     ################################# Slots gérant le zoom #################################
     @Slot()
-    def zoom_in(self):
+    def zoom_in(self) -> None:
         self.zoom_signal.emit(1)
 
     @Slot()
-    def zoom_out(self):
+    def zoom_out(self) -> None:
         self.zoom_signal.emit(-1)
 
     @Slot()
-    def reset_zoom(self):
+    def reset_zoom(self) -> None:
         self.zoom_signal.emit(0)

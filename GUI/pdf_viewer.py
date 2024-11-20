@@ -57,7 +57,7 @@ class PDFViewer(QWidget):
 
 
 class SearchBar(QWidget):
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: PDFViewer) -> None:
         super().__init__(parent)
         self._parent = parent
         self.pdf_view = parent.pdf_view
@@ -163,7 +163,7 @@ class ZoomManager:
     ZOOM_INIT_LEVEL = 1.0
     TIMER_TIMEOUT = 100  # 100 ms
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: PDFViewer) -> None:
         self._parent = parent
         self.pdf_view = parent.pdf_view
         self.zoom_level = self.ZOOM_INIT_LEVEL
@@ -183,7 +183,7 @@ class ZoomManager:
     def zoom_in(self) -> None:
         if self.zoom_level < self.ZOOM_UPPER_LIMIT:  # limite pour ne pas trop zoomer
             self.zoom_level += self.ZOOM_STEP
-            self._apply_zoom()
+            self.apply_zoom()
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus zoomer davantage
@@ -194,7 +194,7 @@ class ZoomManager:
     def zoom_out(self) -> None:
         if self.zoom_level > self.ZOOM_LOWER_LIMIT:  # limite pour ne pas trop dézoomer
             self.zoom_level -= self.ZOOM_STEP
-            self._apply_zoom()
+            self.apply_zoom()
         else:
             # afficher un message d'avertissement pour avertir que l'utilisateur
             # ne peut plus dézoomer davantage
@@ -204,9 +204,9 @@ class ZoomManager:
 
     def reset_zoom(self) -> None:
         self.zoom_level = self.ZOOM_INIT_LEVEL
-        self._apply_zoom()
+        self.apply_zoom()
 
-    def _apply_zoom(self) -> None:
+    def apply_zoom(self) -> None:
         self.pdf_view.setZoomFactor(self.zoom_level)
 
     def show_zoom_warning(self) -> None:

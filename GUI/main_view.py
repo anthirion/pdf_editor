@@ -1,26 +1,29 @@
 from pathlib import Path
 
 from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import (
     QMainWindow, QStackedWidget, )
 
 from GUI.homepage import HomePage
 from GUI.pdf_viewer import PDFViewer
-from GUI.tool_view import ToolView
-from GUI.topbar import TopBar
 
 
 class PDFEditorMainWindow(QMainWindow):
-    def __init__(self, app):
+    def __init__(self, app: QApplication) -> None:
         super().__init__()
         self.setWindowTitle("PDF Editor")
         self.setGeometry(100, 100, 800, 600)
-        self._displayed_file = ""
+        self.displayed_file = ""
         self._files_to_delete: list[str] = []
-        self._app = app
+        self.app = app
+        self.menubar = self.menuBar()
+        # Import différé pour éviter les imports circulaires
+        from GUI.tool_view import ToolView
         self._tool_view = ToolView(self)
         self.pdf_viewer = PDFViewer()
         # Barre de menu et d'outils
+        from GUI.topbar import TopBar
         self.topbar = TopBar(self)
 
         # Zone de contenu principale
@@ -32,7 +35,7 @@ class PDFEditorMainWindow(QMainWindow):
         self.content_area.addWidget(self._tool_view)
         self.content_area.addWidget(self.pdf_viewer)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         # supprimer les fichiers renommés par l'utilisateur pour éviter de garder
         # des fichiers inutiles
         for file in self._files_to_delete:

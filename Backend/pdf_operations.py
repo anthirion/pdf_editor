@@ -63,7 +63,7 @@ def merge_pdf(output_path: Path, pdf_paths: list[Path]):
         raise ValueError(f"[merge_pdf] {GV.empty_list_error_msg}")
 
 
-def split_pdf(output_path: Path, pdf_path: Path):
+def split_pdf(output_path: Path, pdf_paths: list[Path]) -> None:
     pass
 
 

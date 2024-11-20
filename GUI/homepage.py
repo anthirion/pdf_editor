@@ -1,16 +1,15 @@
-from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QGridLayout, QSpacerItem, QSizePolicy,
-)
-from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QGridLayout, QSpacerItem, QSizePolicy,
+)
 
 from GUI.resources import merge_icon
 from global_variables import default_spacing
 
 
 class HomePage(QWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setGeometry(100, 100, 800, 600)
         self.main_layout = QVBoxLayout(self)
@@ -20,7 +19,7 @@ class HomePage(QWidget):
         self.tools_grid = self.init_tools_grid()
         self.init_layout()
 
-    def init_title_and_description(self):
+    def init_title_and_description(self) -> tuple[QLabel, QLabel]:
         title_label = QLabel("Bienvenue dans PDF editor !")
         title_label.setStyleSheet(
             "font-size: 24px; font-weight: bold; qproperty-alignment: AlignCenter;")
@@ -33,7 +32,7 @@ class HomePage(QWidget):
         description_label.setWordWrap(True)
         return title_label, description_label
 
-    def init_tools_grid(self):
+    def init_tools_grid(self) -> QGridLayout:
         tools_grid = QGridLayout()
 
         tools_name = [
@@ -63,8 +62,8 @@ class HomePage(QWidget):
             tool_layout = QVBoxLayout(tool_widget)
             icon_label = QLabel()
             icon_label.setPixmap(QPixmap(tool_icon)
-                                 .scaled(42, 42, Qt.KeepAspectRatio,
-                                         Qt.SmoothTransformation))
+                                 .scaled(42, 42, Qt.AspectRatioMode.KeepAspectRatio,
+                                         Qt.TransformationMode.SmoothTransformation))
             tool_layout.addWidget(icon_label)
             tool_label = QLabel(tool_name)
             tool_label.setStyleSheet("font-weight: bold;")
@@ -76,14 +75,14 @@ class HomePage(QWidget):
 
         return tools_grid
 
-    def init_layout(self):
+    def init_layout(self) -> None:
         self.main_layout.addWidget(self.description_label)
         self.main_layout.addSpacing(default_spacing * 2)
         self.main_layout.addLayout(self.tools_grid)
         # Ajouter un espace flexible en bas pour éviter que les éléments d'interface
         # ne prennent tout l'espace vertical disponible
         self.main_layout.addSpacerItem(QSpacerItem(20, 40,
-                                                   QSizePolicy.Minimum,
-                                                   QSizePolicy.Expanding,
+                                                   QSizePolicy.Policy.Minimum,
+                                                   QSizePolicy.Policy.Expanding,
                                                    )
                                        )

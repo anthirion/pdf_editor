@@ -7,6 +7,7 @@ import global_variables as GV
 from Backend.pdf_operations import (
     merge_pdf, split_pdf, jpg_to_pdf, pdf_to_jpg
 )
+from GUI.main_view import PDFEditorMainWindow
 
 
 class ToolView(PySide6.QtWidgets.QWidget):
@@ -21,7 +22,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
     """
     display_pdf_signal = Signal(str)
 
-    def __init__(self, parent: PySide6.QtWidgets.QWidget = None, tool: int = 0) -> None:
+    def __init__(self, parent: PDFEditorMainWindow, tool: int = 0) -> None:
         super().__init__()
         self._parent = parent
         self.display_pdf_signal.connect(self._parent.display_pdf)
@@ -44,7 +45,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
             case _:
                 self._caption = base_caption
 
-    def treat_pdfs(self):
+    def treat_pdfs(self) -> None:
         """
         Cette fonction demande à l'utilisateur de sélectionner des pdf puis leur applique une
         transformation (fusion, séparation, conversion) en fonction de l'outil choisi

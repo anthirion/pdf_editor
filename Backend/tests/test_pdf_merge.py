@@ -8,7 +8,7 @@ from Backend.pdf_operations import merge_pdf
 
 class TestPDFMerge(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         output_folder_path = Path("/home/thiran/projets_persos/pdf_editor/tests/")
         # Configure les chemins pour les tests
         output_folder_path.mkdir(parents=True, exist_ok=True)
@@ -20,11 +20,11 @@ class TestPDFMerge(unittest.TestCase):
         self.test_pdf1.touch()
         self.test_pdf2.touch()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         # Nettoyer les fichiers temporaires créés après le test
         self.test_output.unlink(missing_ok=True)
 
-    def test_merge_two_pdfs(self):
+    def test_merge_two_pdfs(self) -> None:
         merge_pdf(self.test_output, [self.test_pdf1, self.test_pdf2])
         self.assertTrue(self.test_output.exists())
         # Vérifie que le nombre de pages du pdf fusionné est égal à la somme des pages
@@ -34,12 +34,12 @@ class TestPDFMerge(unittest.TestCase):
                          totalpage_count(self.test_pdf1, self.test_pdf2)
                          )
 
-    def test_merge_empty_list(self):
+    def test_merge_empty_list(self) -> None:
         with self.assertRaises(ValueError):
             merge_pdf(self.test_output, [])
         self.assertFalse(self.test_output.exists())  # Pas de fichier créé pour une liste vide
 
-    def test_nonexistent_file_in_list(self):
+    def test_nonexistent_file_in_list(self) -> None:
         nonexistent_pdf = Path("nonexistent.pdf")
         merge_pdf(self.test_output, [nonexistent_pdf])
         self.assertFalse(self.test_output.exists())
