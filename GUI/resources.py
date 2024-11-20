@@ -1,4 +1,4 @@
-icon_dir = "./icons/"
+icon_dir = "./GUI/icons/"
 
 merge_icon = icon_dir + "merge.png"
 division_icon = icon_dir + "merge.png"
