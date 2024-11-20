@@ -52,6 +52,7 @@ class PDFEditorMainWindow(QMainWindow):
         self._tool_view.treat_pdfs()
 
     @Slot(str)
-    def display_pdf(self, pdf_file_path: str) -> None:
+    def display_pdf(self, pdf_file: str) -> None:
+        self.displayed_file = pdf_file
         self.content_area.setCurrentIndex(2)
-        self.pdf_viewer.display_pdf(pdf_file_path)
+        self.pdf_viewer.display_pdf(pdf_file)

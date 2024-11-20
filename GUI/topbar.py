@@ -160,23 +160,18 @@ class TopBar(QWidget):
         pass
 
     def save_file_as(self) -> None:
-        default_directory = "/home/thiran/projets_persos/pdf_editor/pdf_examples/"
         # Ouvrir une boîte de dialogue pour choisir le nom et l'emplacement du fichier à enregistrer
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Enregistrer le fichier sous", default_directory, "PDF Files (*.pdf);;All Files (*)"
+            self, "Enregistrer le fichier sous", GV.default_save_dir, "PDF Files (*.pdf);;All Files (*)"
         )
 
         if file_path:
             try:
                 # TODO: enregistrer un fichier non existant
-                source_file_path = Path(self._parent.displayed_file)
-                destination_file = Path(file_path)
-                self._parent.displayed_file = file_path
-
-                # Copier le contenu du fichier actuel vers le fichier de destination
-                destination_file.write_bytes(
-                    source_file_path.read_bytes())
-
+                # Dans cette version du code, on ne fait que renommer le fichier
+                source_path = Path(self._parent.displayed_file)
+                destination_path = Path(file_path)
+                source_path.rename(destination_path)
                 QMessageBox.information(
                     self, "Enregistrement", "Fichier enregistré avec succès.")
 
@@ -184,10 +179,6 @@ class TopBar(QWidget):
                 # Message d'erreur en cas de problème lors de l'enregistrement
                 QMessageBox.critical(
                     self, "Erreur d'enregistrement", f"Impossible d'enregistrer le fichier : {e}")
-        else:
-            # Si aucun chemin n'est sélectionné
-            QMessageBox.warning(self, "Enregistrement annulé",
-                                "Aucun fichier n'a été enregistré.")
 
     @Slot()
     def quit_application(self) -> None:
