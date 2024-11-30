@@ -9,8 +9,8 @@ from Backend.pdf_operations import pdf_to_jpg
 class TestPDFToJPGConversion(unittest.TestCase):
     def setUp(self) -> None:
         # Création d'un dossier temporaire pour les tests
-        self.test_output_folder = Path("Backend/tests/resources/test_output_folder")
-        self.test_output_folder.mkdir(exist_ok=True)
+        self.test_output_folder = Path("Backend/tests/resources/output_jpgs")
+        self.test_output_folder.mkdir(exist_ok=False)
         self.test_pdf = Path("Backend/tests/resources/Python-w1.pdf")
 
     def tearDown(self) -> None:

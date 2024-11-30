@@ -17,9 +17,8 @@ class TestPDFMerge(unittest.TestCase):
         self.test_pdf2 = output_folder_path / Path("Python-w2.pdf")
 
     def tearDown(self) -> None:
-        pass
         # Nettoyer les fichiers temporaires créés après le test
-        # self.test_output.unlink(missing_ok=True)
+        self.test_output.unlink(missing_ok=True)
 
     def test_merge_two_pdfs(self) -> None:
         merge_pdf(self.test_output, [self.test_pdf1, self.test_pdf2])
