@@ -32,8 +32,7 @@ jobs:
 
       - name: Analyze code with mypy
         run: |
-          mypy Backend/
-          mypy GUI/
+          mypy -p GUI/ Backend/
 
       - name: Run Unit Tests
         run: python -m unittest
