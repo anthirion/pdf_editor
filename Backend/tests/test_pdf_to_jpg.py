@@ -1,6 +1,6 @@
 import unittest
-from pathlib import Path
 
+from pathlib import Path
 from pypdf import PdfReader
 
 from Backend.pdf_operations import pdf_to_jpg
@@ -9,9 +9,9 @@ from Backend.pdf_operations import pdf_to_jpg
 class TestPDFToJPGConversion(unittest.TestCase):
     def setUp(self) -> None:
         # Création d'un dossier temporaire pour les tests
-        self.test_output_folder = Path("/home/thiran/projets_persos/pdf_editor/tests/test_output_folder")
+        self.test_output_folder = Path("Backend/tests/resources/test_output_folder")
         self.test_output_folder.mkdir(exist_ok=True)
-        self.test_pdf = Path("/home/thiran/projets_persos/pdf_editor/tests/Python-w1.pdf")
+        self.test_pdf = Path("Backend/tests/resources/Python-w1.pdf")
 
     def tearDown(self) -> None:
         # Nettoyage après les tests

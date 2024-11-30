@@ -1,6 +1,6 @@
 import unittest
-from pathlib import Path
 
+from pathlib import Path
 from pypdf import PdfReader
 
 from Backend.pdf_operations import merge_pdf
@@ -9,20 +9,17 @@ from Backend.pdf_operations import merge_pdf
 class TestPDFMerge(unittest.TestCase):
 
     def setUp(self) -> None:
-        output_folder_path = Path("/home/thiran/projets_persos/pdf_editor/tests/")
+        output_folder_path = Path("Backend/tests/resources")
         # Configure les chemins pour les tests
         output_folder_path.mkdir(parents=True, exist_ok=True)
         self.test_output = output_folder_path / Path("test_output.pdf")
-        self.test_pdf1 = output_folder_path / Path("attestation_suivi_cours_python.pdf")
-        self.test_pdf2 = output_folder_path / Path("Python-w1.pdf")
-
-        # Crée des fichiers PDF pour les tests
-        self.test_pdf1.touch()
-        self.test_pdf2.touch()
+        self.test_pdf1 = output_folder_path / Path("Python-w1.pdf")
+        self.test_pdf2 = output_folder_path / Path("Python-w2.pdf")
 
     def tearDown(self) -> None:
+        pass
         # Nettoyer les fichiers temporaires créés après le test
-        self.test_output.unlink(missing_ok=True)
+        # self.test_output.unlink(missing_ok=True)
 
     def test_merge_two_pdfs(self) -> None:
         merge_pdf(self.test_output, [self.test_pdf1, self.test_pdf2])

@@ -1,4 +1,5 @@
 import unittest
+
 from pathlib import Path
 
 from Backend.pdf_operations import jpg_to_pdf
@@ -7,7 +8,7 @@ from Backend.pdf_operations import jpg_to_pdf
 class TestJPGToPDFConversion(unittest.TestCase):
     def setUp(self) -> None:
         # Dossier stockant les fichiers JPG à convertir
-        self.test_folder = Path("/home/thiran/projets_persos/pdf_editor/tests")
+        self.test_folder = Path("Backend/tests/resources")
         self.test_input_folder = self.test_folder / Path("ilovepdf_pages-to-jpg")
         self.test_input_folder.mkdir(exist_ok=True)
         # liste des fichiers JPG à convertir

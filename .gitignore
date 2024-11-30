@@ -1,3 +1,4 @@
 __pycache__/
 pdf_editor_app.egg-info/
 .mypy_cache/
+.venv/
