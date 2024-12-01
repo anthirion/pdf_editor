@@ -109,9 +109,7 @@ class SearchBar(QWidget):
         du résultat
         @param current_result: numéro du résultat à afficher
         """
-        if not self._text_locations:
-            self._parent_window.show_warning("Aucun résultat trouvé")
-        elif current_result < len(self._text_locations):
+        if self._text_locations and current_result < len(self._text_locations):
             self._pagenavigator.jump(self._text_locations[current_result])
             # surligne le résultat courant
             self.pdf_view.setCurrentSearchResultIndex(current_result)

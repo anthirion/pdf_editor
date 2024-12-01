@@ -6,4 +6,5 @@ pathlib==1.0.1
 pdf2image==1.17.0
 flake8==7.1.1
 setuptools==75.6.0
+setuptools-scm==8.1.0
 bandit==1.8.0

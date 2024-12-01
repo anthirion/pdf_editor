@@ -7,7 +7,8 @@ from GUI.main_view import PDFEditorMainWindow
 # importation des icones
 from GUI.resources import (
     open_icon, quit_icon, save_icon,
-    save_as_icon, search_icon, merge_icon, help_icon
+    save_as_icon, search_icon, help_icon,
+    merge_icon, split_icon, pdf_to_jpg_icon, jpg_to_pdf_icon
 )
 from pathlib import Path
 
@@ -111,14 +112,14 @@ class TopBar(QWidget):
         merge_pdf_action = QAction(QIcon(merge_icon), "Fusionner PDF", self)
         merge_pdf_action.triggered.connect(self.merge_pdf_selected)
         # Sous-menu "Diviser PDF"
-        split_pdf_action = QAction("Diviser PDF", self)
+        split_pdf_action = QAction(QIcon(split_icon), "Diviser PDF", self)
         split_pdf_action.triggered.connect(self.split_pdf_selected)
         # Sous-menu "Convertir de PDF vers JPG"
-        convert_pdf_to_jpg_action = QAction("Convertir de PDF vers JPG", self)
+        convert_pdf_to_jpg_action = QAction(QIcon(pdf_to_jpg_icon), "Convertir de PDF vers JPG", self)
         convert_pdf_to_jpg_action.triggered.connect(
             self.convert_pdf_to_jpg_selected)
         # Sous-menu "Convertir de JPG vers PDF"
-        convert_jpg_to_pdf_action = QAction("Convertir de JPG vers PDF", self)
+        convert_jpg_to_pdf_action = QAction(QIcon(jpg_to_pdf_icon), "Convertir de JPG vers PDF", self)
         convert_jpg_to_pdf_action.triggered.connect(
             self.convert_jpg_to_pdf_selected)
 

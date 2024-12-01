@@ -4,7 +4,9 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QGridLayout, QSpacerItem, QSizePolicy,
 )
 
-from GUI.resources import merge_icon
+from GUI.resources import (
+    merge_icon, split_icon, pdf_to_jpg_icon, jpg_to_pdf_icon
+)
 from global_variables import default_spacing
 
 
@@ -51,9 +53,9 @@ class HomePage(QWidget):
 
         icons = [
             merge_icon,
-            merge_icon,
-            merge_icon,
-            merge_icon,
+            split_icon,
+            pdf_to_jpg_icon,
+            jpg_to_pdf_icon,
         ]
 
         for i, tool in enumerate(zip(tools_name, tools_desc, icons)):

@@ -1,5 +1,6 @@
 # Global variables for backend
 from enum import IntEnum
+
 from pathlib import Path
 
 
@@ -11,7 +12,7 @@ class ToolConstants(IntEnum):
     JPGtoPDFConverter = 4
 
 
-default_save_dir = "/home/thiran/projets_persos/pdf_editor/tests/"
+default_save_dir = "/home/thiran/projets_persos/pdf_editor_app/Backend/tests/resources"
 output_pdf_path = Path(default_save_dir) / Path("output.pdf")
 output_folder = Path(default_save_dir) / Path("output_jpgs")
 output_file_converted_from_jpg = Path(default_save_dir) / Path("converted.pdf")
