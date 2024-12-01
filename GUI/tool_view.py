@@ -1,7 +1,6 @@
-from pathlib import Path
-
 import PySide6.QtWidgets
 from PySide6.QtCore import Signal
+from pathlib import Path
 
 import global_variables as GV
 from Backend.pdf_operations import (
@@ -21,6 +20,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
     l'outil sélectionné
     """
     display_pdf_signal = Signal(str)
+    failure_msg = "Echec de l'opération"
 
     def __init__(self, parent: PDFEditorMainWindow, tool: int = 0) -> None:
         super().__init__()
@@ -78,17 +78,14 @@ class ToolView(PySide6.QtWidgets.QWidget):
                         message_box_text = f"Les images ont été enregistrées dans le dossier {GV.output_folder}"
             # exceptions rejetées après l'échec d'une transformation (fusion, division ou conversion)
             except FileNotFoundError:
-                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                PySide6.QtWidgets.QMessageBox.warning(self, self.failure_msg,
                                                       GV.file_not_found_error_msg)
-            except FileExistsError:
-                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
-                                                      GV.file_exists_error_msg)
             except ValueError:
-                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
+                PySide6.QtWidgets.QMessageBox.warning(self, self.failure_msg,
                                                       GV.empty_list_error_msg)
-            except:
-                PySide6.QtWidgets.QMessageBox.warning(self, "Echec de l'opération",
-                                                      "Une erreur inconnue s'est produite")
+            except OSError:
+                PySide6.QtWidgets.QMessageBox.warning(self, self.failure_msg,
+                                                      "Une erreur système s'est produite")
 
             # revenir à la homepage en attendant le traitement des fichiers
             self._parent.content_area.setCurrentIndex(0)

@@ -1,9 +1,9 @@
 icon_dir = "./GUI/icons/"
 
 merge_icon = icon_dir + "merge.png"
-division_icon = icon_dir + "merge.png"
-pdf_to_png_icon = icon_dir + "merge.png"
-png_to_pdf_icon = icon_dir + "merge.png"
+split_icon = icon_dir + "split.png"
+pdf_to_png_icon = icon_dir + "conversion.png"
+png_to_pdf_icon = icon_dir + "conversion.png"
 add_icon = icon_dir + "add.png"
 open_icon = icon_dir + "open.png"
 remove_icon = icon_dir + "remove.png"

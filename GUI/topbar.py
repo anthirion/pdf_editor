@@ -1,8 +1,7 @@
-from pathlib import Path
-
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QToolBar, QFileDialog, QMessageBox, QWidget
+from pathlib import Path
 
 import global_variables as GV
 from GUI.main_view import PDFEditorMainWindow
@@ -33,7 +32,7 @@ class TopBar(QWidget):
         super().__init__()
         self._parent = parent
         self._current_file_path = Path()
-        self._menu = parent.menubar
+        self._menu = parent.barmenu
         self.connect_signals()
         self.init_topbar()
 
@@ -157,6 +156,7 @@ class TopBar(QWidget):
             self.display_pdf_signal.emit(file_path)
 
     def save_file(self) -> None:
+        # TODO
         pass
 
     def save_file_as(self) -> None:

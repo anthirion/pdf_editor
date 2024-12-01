@@ -1,8 +1,8 @@
-from pathlib import Path
-
 import pdf2image
 from PIL import Image
+from pathlib import Path
 from pypdf import PdfWriter, PdfReader
+from pypdf.errors import PdfReadError, EmptyFileError, ParseError
 
 import global_variables as GV
 
@@ -16,17 +16,22 @@ def text_occurences(file_path: Path, search: str) -> int:
     if file_path.exists() and search:
         try:
             global_occurences = 0
-            reader = PdfReader(file_path)
+            reader = PdfReader(file_path, strict=False)
             for page in reader.pages:
                 text = page.extract_text()
                 occurences_on_page = text.count(search)
                 if occurences_on_page > 0:
                     global_occurences += occurences_on_page
             return global_occurences
-        except:
-            raise Exception("[text_occurences] Erreur lors de la décompte du nombre de mots")
+        except EmptyFileError:
+            raise ValueError(f"[text_occurences] Le fichier {file_path} est vide")
+        except ParseError:
+            raise ValueError(f"[text_occurences] Veuillez vérifier que le fichier {file_path} n'est pas corrompu")
+        except PdfReadError:
+            raise OSError(
+                f"[text_occurences] Erreur lors de la lecture du pdf, veuillez vérifier que le fichier a les bonnes permissions")
     else:
-        raise FileExistsError(f"[text_occurences] {GV.file_exists_error_msg}")
+        raise FileNotFoundError(f"[text_occurences] {GV.file_exists_error_msg}")
 
 
 def merge_pdf(output_path: Path, pdf_paths: list[Path]):
@@ -44,26 +49,26 @@ def merge_pdf(output_path: Path, pdf_paths: list[Path]):
             output_path.touch()
 
         merger = PdfWriter()
-        try:
-            # Ajouter chaque fichier PDF à la fusion
-            for pdf in pdf_paths:
+        if pdf_paths[0].exists():
+            pdf_paths_correct = True
+        # Ajouter chaque fichier PDF à la fusion
+        for pdf in pdf_paths:
+            try:
                 if pdf.exists():
-                    pdf_paths_correct = True
                     merger.append(pdf)
-            # Écrire le fichier fusionné dans le fichier de sortie
-            with open(output_path, 'wb') as output_pdf:
-                merger.write(output_pdf)
-        except Exception as e:
-            print(f"Erreur lors de la fusion des PDF : {str(e)}")
-        finally:
-            if not pdf_paths_correct:
-                output_path.unlink()
-            merger.close()
+                # Écrire le fichier fusionné dans le fichier de sortie
+                with open(output_path, 'wb') as output_pdf:
+                    merger.write(output_pdf)
+            finally:
+                if not pdf_paths_correct:
+                    output_path.unlink()
+                merger.close()
     else:
         raise ValueError(f"[merge_pdf] {GV.empty_list_error_msg}")
 
 
 def split_pdf(output_path: Path, pdf_paths: list[Path]) -> None:
+    # TODO
     pass
 
 

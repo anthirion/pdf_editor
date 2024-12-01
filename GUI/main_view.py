@@ -1,9 +1,8 @@
-from pathlib import Path
-
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import (
     QMainWindow, QStackedWidget, )
+from pathlib import Path
 
 from GUI.homepage import HomePage
 from GUI.pdf_viewer import PDFViewer
@@ -17,7 +16,7 @@ class PDFEditorMainWindow(QMainWindow):
         self.displayed_file = ""
         self._files_to_delete: list[str] = []
         self.app = app
-        self.menubar = self.menuBar()
+        self.barmenu = self.menuBar()
         # Import différé pour éviter les imports circulaires
         from GUI.tool_view import ToolView
         self._tool_view = ToolView(self)
