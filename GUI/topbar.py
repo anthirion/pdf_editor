@@ -1,7 +1,6 @@
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QToolBar, QFileDialog, QMessageBox, QWidget
-from pathlib import Path
 
 import global_variables as GV
 from GUI.main_view import PDFEditorMainWindow
@@ -10,6 +9,7 @@ from GUI.resources import (
     open_icon, quit_icon, save_icon,
     save_as_icon, search_icon, merge_icon, help_icon
 )
+from pathlib import Path
 
 
 class TopBar(QWidget):
@@ -28,20 +28,20 @@ class TopBar(QWidget):
     # Si cet entier est 0, cela signifie que l'utilisateur souhaite réinitialiser le zoom
     zoom_signal = Signal(int)
 
-    def __init__(self, parent: PDFEditorMainWindow) -> None:
+    def __init__(self, parent_window: PDFEditorMainWindow) -> None:
         super().__init__()
-        self._parent = parent
+        self._parent_window = parent_window
         self._current_file_path = Path()
-        self._menu = parent.barmenu
+        self._menu = parent_window.barmenu
         self.connect_signals()
         self.init_topbar()
 
     def connect_signals(self) -> None:
-        self.display_tool_view_signal.connect(self._parent.display_tool_view)
-        self.display_pdf_signal.connect(self._parent.display_pdf)
+        self.display_tool_view_signal.connect(self._parent_window.display_tool_view)
+        self.display_pdf_signal.connect(self._parent_window.display_pdf)
         self.search_text.connect(
-            self._parent.pdf_viewer.search_bar.toggle_search_bar)
-        self.zoom_signal.connect(self._parent.pdf_viewer.zoom_handler)
+            self._parent_window.pdf_viewer.search_bar.toggle_search_bar)
+        self.zoom_signal.connect(self._parent_window.pdf_viewer.zoom_handler)
 
     def init_topbar(self) -> None:
         """
@@ -142,7 +142,7 @@ class TopBar(QWidget):
         toolbar.addAction(open_action)
         toolbar.addAction(search_action)
 
-        self._parent.addToolBar(toolbar)
+        self._parent_window.addToolBar(toolbar)
 
     ################################# Slots génériques #################################
 
@@ -169,7 +169,7 @@ class TopBar(QWidget):
             try:
                 # TODO: enregistrer un fichier non existant
                 # Dans cette version du code, on ne fait que renommer le fichier
-                source_path = Path(self._parent.displayed_file)
+                source_path = Path(self._parent_window.displayed_file)
                 destination_path = Path(file_path)
                 source_path.rename(destination_path)
                 QMessageBox.information(
@@ -182,7 +182,7 @@ class TopBar(QWidget):
 
     @Slot()
     def quit_application(self) -> None:
-        app = self._parent.app.instance()
+        app = self._parent_window.app.instance()
         if app is not None:
             app.quit()
         else:
@@ -196,23 +196,23 @@ class TopBar(QWidget):
 
     @Slot()
     def merge_pdf_selected(self) -> None:
-        self._parent.setWindowTitle("PDF Editor - Outil de fusion")
+        self._parent_window.setWindowTitle("PDF Editor - Outil de fusion")
         self.display_tool_view_signal.emit(GV.ToolConstants.MergerTool)
 
     @Slot()
     def split_pdf_selected(self) -> None:
-        self._parent.setWindowTitle("PDF Editor - Outil de séparation")
+        self._parent_window.setWindowTitle("PDF Editor - Outil de séparation")
         self.display_tool_view_signal.emit(GV.ToolConstants.SplitterTool)
 
     @Slot()
     def convert_pdf_to_jpg_selected(self) -> None:
-        self._parent.setWindowTitle(
+        self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de PDF vers JPG")
         self.display_tool_view_signal.emit(GV.ToolConstants.PDFtoJPGConverter)
 
     @Slot()
     def convert_jpg_to_pdf_selected(self) -> None:
-        self._parent.setWindowTitle(
+        self._parent_window.setWindowTitle(
             "PDF Editor - Outil de convertion de JPG vers PDF")
         self.display_tool_view_signal.emit(GV.ToolConstants.JPGtoPDFConverter)
 

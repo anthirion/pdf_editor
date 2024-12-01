@@ -1,12 +1,12 @@
 import PySide6.QtWidgets
 from PySide6.QtCore import Signal
-from pathlib import Path
 
 import global_variables as GV
 from Backend.pdf_operations import (
     merge_pdf, split_pdf, jpg_to_pdf, pdf_to_jpg
 )
 from GUI.main_view import PDFEditorMainWindow
+from pathlib import Path
 
 
 class ToolView(PySide6.QtWidgets.QWidget):
@@ -22,10 +22,10 @@ class ToolView(PySide6.QtWidgets.QWidget):
     display_pdf_signal = Signal(str)
     failure_msg = "Echec de l'opération"
 
-    def __init__(self, parent: PDFEditorMainWindow, tool: int = 0) -> None:
+    def __init__(self, parent_window: PDFEditorMainWindow, tool: int = 0) -> None:
         super().__init__()
-        self._parent = parent
-        self.display_pdf_signal.connect(self._parent.display_pdf)
+        self._parent_window = parent_window
+        self.display_pdf_signal.connect(self._parent_window.display_pdf)
         self.setGeometry(100, 100, 600, 400)
         self.pdf_files: list[Path] = []
         self.tool_index = tool
@@ -56,7 +56,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
         self.pdf_files = [Path(file) for file in selected_files]
         # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
         if self.pdf_files:
-            self._parent.topbar._current_file_path = GV.output_pdf_path
+            self._parent_window.topbar._current_file_path = GV.output_pdf_path
             message_box_title = "Succès de la conversion de PDF"
             message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.output_pdf_path}"
             try:
@@ -88,7 +88,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
                                                       "Une erreur système s'est produite")
 
             # revenir à la homepage en attendant le traitement des fichiers
-            self._parent.content_area.setCurrentIndex(0)
+            self._parent_window.content_area.setCurrentIndex(0)
             PySide6.QtWidgets.QMessageBox.information(self, message_box_title, message_box_text)
             # Afficher le fichier pdf obtenu après la transformation, sauf si le résultat de la
             # transformation n'est pas un fichier pdf
@@ -96,4 +96,4 @@ class ToolView(PySide6.QtWidgets.QWidget):
                 self.display_pdf_signal.emit(str(GV.output_pdf_path))
         else:
             # revenir à la homepage
-            self._parent.content_area.setCurrentIndex(0)
+            self._parent_window.content_area.setCurrentIndex(0)

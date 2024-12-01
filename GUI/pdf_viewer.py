@@ -57,12 +57,12 @@ class PDFViewer(QWidget):
 
 
 class SearchBar(QWidget):
-    def __init__(self, parent: PDFViewer) -> None:
-        super().__init__(parent)
-        self._parent = parent
-        self.pdf_view = parent.pdf_view
-        self._pagenavigator = parent.nav
-        self.search_model = parent.search_model
+    def __init__(self, parent_window: PDFViewer) -> None:
+        super().__init__(parent_window)
+        self._parent_window = parent_window
+        self.pdf_view = parent_window.pdf_view
+        self._pagenavigator = parent_window.nav
+        self.search_model = parent_window.search_model
 
         # Création de la barre de recherche et des boutons
         self.search_input = QLineEdit()
@@ -110,7 +110,7 @@ class SearchBar(QWidget):
         @param current_result: numéro du résultat à afficher
         """
         if not self._text_locations:
-            self._parent.show_warning("Aucun résultat trouvé")
+            self._parent_window.show_warning("Aucun résultat trouvé")
         elif current_result < len(self._text_locations):
             self._pagenavigator.jump(self._text_locations[current_result])
             # surligne le résultat courant
@@ -163,9 +163,9 @@ class ZoomManager:
     ZOOM_INIT_LEVEL = 1.0
     TIMER_TIMEOUT = 100  # 100 ms
 
-    def __init__(self, parent: PDFViewer) -> None:
-        self._parent = parent
-        self.pdf_view = parent.pdf_view
+    def __init__(self, parent_window: PDFViewer) -> None:
+        self._parent_window = parent_window
+        self.pdf_view = parent_window.pdf_view
         self.zoom_level = self.ZOOM_INIT_LEVEL
         self._warning_message = ""
         self.set_timer()
@@ -210,4 +210,4 @@ class ZoomManager:
         self.pdf_view.setZoomFactor(self.zoom_level)
 
     def show_zoom_warning(self) -> None:
-        self._parent.show_warning(self._warning_message)
+        self._parent_window.show_warning(self._warning_message)
