@@ -52,7 +52,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
         """
         self.set_caption()
         selected_files, _ = PySide6.QtWidgets.QFileDialog.getOpenFileNames(
-            self, self._caption, "", "PDF Files (*.pdf)")
+            self, self._caption, "")
         self.pdf_files = [Path(file) for file in selected_files]
         # Récupérer la liste des fichiers PDF sélectionnés par l'utilisateur
         if self.pdf_files:
