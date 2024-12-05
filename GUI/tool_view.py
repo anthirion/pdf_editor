@@ -35,7 +35,7 @@ class ToolView(PySide6.QtWidgets.QWidget):
         self.message_box_text = f"Le PDF converti a été enregistré à l'emplacement {GV.output_pdf_path}"
         # fenêtre qui s'ouvre et se ferme automatiquement indiquant à l'utilisateur
         # de patienter pendant le traitement de sa requête
-        self.loading_dialog: PySide6.QtWidgets.QDialog = None
+        self.loading_dialog = LoadingDialog()
         self.loading_timer = QTimer()
         self.loading_timer.setSingleShot(True)
         self.loading_timer.setInterval(3 * 1000)  # 3s
@@ -93,9 +93,8 @@ class ToolView(PySide6.QtWidgets.QWidget):
     @Slot(int, str)
     def transformation_process_finished(self, error, msg) -> None:
         # fermer la fenêtre de loading automatiquement à la fin du traitement
-        if self.loading_dialog:
+        if self.loading_dialog.isVisible():
             self.loading_dialog.close()
-        print("Temps restant:", self.loading_timer.remainingTime())
         self.loading_timer.stop()
         # afficher un message à l'utilisateur indiquant le résultat de la transformation
         if error:
@@ -113,7 +112,6 @@ class ToolView(PySide6.QtWidgets.QWidget):
         Ajouter un message indiquant à l'utilisateur de patienter.
         Ce message prend la forme d'une fenêtre qui s'ouvre par dessus la fenêtre principale
         """
-        self.loading_dialog = LoadingDialog()
         self.loading_dialog.show()
 
 
