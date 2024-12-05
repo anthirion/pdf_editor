@@ -43,4 +43,6 @@ ont aussi été récupérées <a href="https://github.com/LibreOffice/core/tree/
 <li>L'affichage d'un message (d'erreur, d'avertissement ou d'information) bloque la prise en compte des évènements. Pour résoudre ce problème, mettre en place un timer avec un court délai (100 ms par exemple) au bout duquel le message sera affiché</li>
 <li>L'utilisation de protocoles pour définir des sous-classes spécifiques</li>
 <li>Différer les imports pour éviter les erreurs d'importations circulaires</li>
+<li>Utiliser un QThread pour effectuer des tâches longues ou lourdes. Possibilité d'utiliser des messages</li>
+<li>QTimer</li>
 </ul>
