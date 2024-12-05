@@ -1,6 +1,7 @@
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QToolBar, QFileDialog, QMessageBox, QWidget
+from pathlib import Path
 
 import global_variables as GV
 from GUI.main_view import PDFEditorMainWindow
@@ -8,9 +9,8 @@ from GUI.main_view import PDFEditorMainWindow
 from GUI.resources import (
     open_icon, quit_icon, save_icon,
     save_as_icon, search_icon, help_icon,
-    merge_icon, split_icon, pdf_to_jpg_icon, jpg_to_pdf_icon
+    merge_icon, pdf_to_jpg_icon, jpg_to_pdf_icon
 )
-from pathlib import Path
 
 
 class TopBar(QWidget):
@@ -112,8 +112,8 @@ class TopBar(QWidget):
         merge_pdf_action = QAction(QIcon(merge_icon), "Fusionner PDF", self)
         merge_pdf_action.triggered.connect(self.merge_pdf_selected)
         # Sous-menu "Diviser PDF"
-        split_pdf_action = QAction(QIcon(split_icon), "Diviser PDF", self)
-        split_pdf_action.triggered.connect(self.split_pdf_selected)
+        # split_pdf_action = QAction(QIcon(split_icon), "Diviser PDF", self)
+        # split_pdf_action.triggered.connect(self.split_pdf_selected)
         # Sous-menu "Convertir de PDF vers JPG"
         convert_pdf_to_jpg_action = QAction(QIcon(pdf_to_jpg_icon), "Convertir de PDF vers JPG", self)
         convert_pdf_to_jpg_action.triggered.connect(
@@ -124,7 +124,7 @@ class TopBar(QWidget):
             self.convert_jpg_to_pdf_selected)
 
         tools_menu.addAction(merge_pdf_action)
-        tools_menu.addAction(split_pdf_action)
+        # tools_menu.addAction(split_pdf_action)
         tools_menu.addAction(convert_pdf_to_jpg_action)
         tools_menu.addAction(convert_jpg_to_pdf_action)
 
