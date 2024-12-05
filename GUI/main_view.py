@@ -48,7 +48,7 @@ class PDFEditorMainWindow(QMainWindow):
     def display_tool_view(self, tool_index: int) -> None:
         self.content_area.setCurrentIndex(1)
         self._tool_view.tool_index = tool_index
-        self._tool_view.treat_pdfs()
+        self._tool_view.transform_pdfs()
 
     @Slot(str)
     def display_pdf(self, pdf_file: str) -> None:
