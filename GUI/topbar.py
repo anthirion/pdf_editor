@@ -42,7 +42,7 @@ class TopBar(QWidget):
         self.display_pdf_signal.connect(self._parent_window.display_pdf)
         self.search_text.connect(
             self._parent_window.pdf_viewer.search_bar.toggle_search_bar)
-        self.zoom_signal.connect(self._parent_window.pdf_viewer.zoom_handler)
+        self.zoom_signal.connect(self._parent_window.pdf_viewer.pdf_view.zoom_handler)
 
     def init_topbar(self) -> None:
         """
