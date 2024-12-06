@@ -151,7 +151,7 @@ class TopBar(QWidget):
     def open_file_dialog(self) -> None:
         # Ouvre une boîte de dialogue pour sélectionner un fichier PDF
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Ouvrir un fichier", "", "PDF Files (*.pdf);;All Files (*)")
+            self._parent_window, "Ouvrir un fichier", "", "PDF Files (*.pdf);;All Files (*)")
 
         if file_path:
             self.display_pdf_signal.emit(file_path)
@@ -163,7 +163,7 @@ class TopBar(QWidget):
     def save_file_as(self) -> None:
         # Ouvrir une boîte de dialogue pour choisir le nom et l'emplacement du fichier à enregistrer
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Enregistrer le fichier sous", GV.default_save_dir, "PDF Files (*.pdf);;All Files (*)"
+            self._parent_window, "Enregistrer le fichier sous", GV.default_save_dir, "PDF Files (*.pdf);;All Files (*)"
         )
 
         if file_path:
